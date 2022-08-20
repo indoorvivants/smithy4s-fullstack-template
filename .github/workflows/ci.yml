@@ -21,11 +21,17 @@ jobs:
           distribution: 'temurin' 
           java-version: '17'
 
-      - run: sbt app/Docker/publishLocal
+      - run: sbt app/Docker/publishLocal versionDump
         env:
           RELEASE: yesh
 
       - name: Deploy to Fly.io
         if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')        
-        run: curl -L https://fly.io/install.sh | sh
+        run: |
+          curl -L https://fly.io/install.sh | sh
+
+          export FLYCTL_INSTALL="$HOME/.fly"
+          export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
+          flyctl deploy -i smithy4s-fullstack:$(cat version)
 
