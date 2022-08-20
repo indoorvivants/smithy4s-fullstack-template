@@ -73,8 +73,8 @@ def indexPage(using
             pairs.map { pair =>
               div(
                 Styles.row,
-                div(pair.key.value),
-                div(pair.value.value),
+                div(Styles.key, pair.key.value),
+                div(Styles.value, pair.value.value),
                 button("+", Styles.btn, increment(pair.key)),
                 button("-", Styles.btn, decrement(pair.key)),
                 a(Styles.bigRedCross, "X", href := "#", delete(pair.key))

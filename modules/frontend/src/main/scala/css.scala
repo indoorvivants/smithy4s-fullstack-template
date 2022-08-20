@@ -35,6 +35,13 @@ object Styles extends StyleSheet.Inline, Common:
     borderBottom(1.px, dashed, white)
   )
 
+  val key = style(
+    width(200.px)
+  )
+  val value = style(
+    width(50.px)
+  )
+
   val bigRedCross = style(
     color.red,
     textDecorationLine.none,
