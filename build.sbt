@@ -208,3 +208,6 @@ ThisBuild / concurrentRestrictions ++= {
     )
   } else Seq.empty
 }
+
+ThisBuild / version ~= (_.replace('+', '-'))
+ThisBuild / dynver  ~= (_.replace('+', '-'))
