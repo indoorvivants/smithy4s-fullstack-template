@@ -27,7 +27,7 @@ object Routes:
       }
 
     val serviceRoutes = SimpleRestJsonBuilder.routes(app.hello).resource
-    val staticRoutes = Static.routes
+    val staticRoutes  = Static.routes
 
     (serviceRoutes, staticRoutes)
       .parMapN(_ <+> _)

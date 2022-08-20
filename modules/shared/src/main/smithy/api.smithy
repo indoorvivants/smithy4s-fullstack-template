@@ -8,7 +8,7 @@ use smithy4s.api#uuidFormat
 @simpleRestJson
 service HelloService {
   version: "1.0.0",
-  operations: [Get, Inc, Dec, Update, Create, Delete]
+  operations: [Get, Inc, Dec, Update, Create, Delete, GetAll]
 }
 
 @readonly
@@ -26,6 +26,30 @@ operation Get {
   }
 
   errors: [KeyNotFound]
+}
+
+@readonly
+@http(method: "GET", uri: "/api/list", code: 200)
+operation GetAll {
+  output := {
+    @required 
+    @httpPayload
+    pairs: Pairs
+  }
+
+  errors: [KeyNotFound]
+}
+
+list Pairs {
+  member: Pair
+}
+
+structure Pair {
+  @required 
+  key: Key 
+
+  @required 
+  value: Value
 }
 
 @idempotent

@@ -39,6 +39,11 @@ class HelloImplementation(logger: Scribe[IO], database: Database)
   override def delete(key: Key): IO[Unit] =
     orNotFound(database.option(operations.Delete(key))).void
 
+  override def getAll(): IO[GetAllOutput] =
+    database.vector(operations.GetAll).map { v =>
+      GetAllOutput(v.toList)
+    }
+
   private def orNotFound(result: IO[Option[Int]]) =
     result.flatMap {
       case None | Some(0) => IO.raiseError(KeyNotFound())

@@ -26,7 +26,7 @@ object Static:
               preferGzipped = true
             )
             .getOrElseF(NotFound())
-        case req @ GET -> Root => idxHtml
+        case req @ GET -> Root        => idxHtml
         case req if req.method == GET => idxHtml
 
       }

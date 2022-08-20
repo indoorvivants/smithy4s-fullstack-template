@@ -6,6 +6,7 @@ import spec.*
 
 import cats.*, cats.data.*, cats.implicits.*
 import doobie.*, doobie.implicits.*
+import smithy4s.Newtype
 
 sealed trait SqlOp[I, O]
 
@@ -14,11 +15,27 @@ sealed abstract class SqlQuery[I, O](val input: I, val out: Query0[O])
 sealed abstract class SqlUpdate[I](val input: I, val out: Update0)
     extends SqlOp[I, Int]
 
+private def ntGet[T: Get](nt: Newtype[T]): Get[nt.Type] =
+  Get[T].map(nt.apply)
+
+private def ntPut[T: Put](nt: Newtype[T]): Put[nt.Type] =
+  Put[T].contramap[nt.Type](_.value)
+
+given Get[Key]   = ntGet(Key)
+given Get[Value] = ntGet(Value)
+
 object operations:
+
   case class Get(key: Key)
       extends SqlQuery(
         key,
         sql"select value from examples where key = ${key.value}".query[Int]
+      )
+
+  case object GetAll
+      extends SqlQuery(
+        (),
+        sql"select key, value from examples".query[(Key, Value)].map(Pair.apply)
       )
 
   case class Create(key: Key)
