@@ -21,7 +21,9 @@ jobs:
           distribution: 'temurin' 
           java-version: '17'
 
-      - run: sbt --client app/Docker/publishLocal
+      - run: sbt app/Docker/publishLocal
+        env:
+          RELEASE: yesh
 
       - name: Deploy to Fly.io
         if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')        
