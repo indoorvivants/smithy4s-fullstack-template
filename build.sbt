@@ -47,8 +47,9 @@ lazy val app = projectMatrix
     scalaVersion := Versions.Scala,
 
     // Docker configuration
-    dockerBaseImage      := Config.DockerBaseImage,
-    Docker / packageName := Config.DockerImageName,
+    dockerBaseImage         := Config.DockerBaseImage,
+    Compile / doc / sources := Seq.empty,
+    Docker / packageName    := Config.DockerImageName,
 
     // dependencies
     libraryDependencies ++= Seq(
@@ -103,7 +104,8 @@ lazy val backend = projectMatrix
       "org.flywaydb"         % "flyway-core"         % Versions.Flyway   % Test
     ),
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
-    Test / fork := true
+    Test / fork             := true,
+    Compile / doc / sources := Seq.empty
   )
 
 lazy val shared = projectMatrix

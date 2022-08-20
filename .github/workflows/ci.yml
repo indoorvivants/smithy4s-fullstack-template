@@ -1,0 +1,26 @@
+name: CI
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' 
+          java-version: '17'
+
+      - run: sbt --client app/Docker/publishLocal
+
+      - name: Deploy to Fly.io
+        if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')        
+        run: curl -L https://fly.io/install.sh | sh
+
