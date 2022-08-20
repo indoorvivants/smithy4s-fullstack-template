@@ -35,7 +35,9 @@ object operations:
   case object GetAll
       extends SqlQuery(
         (),
-        sql"select key, value from examples".query[(Key, Value)].map(Pair.apply)
+        sql"select key, value from examples order by key"
+          .query[(Key, Value)]
+          .map(Pair.apply)
       )
 
   case class Create(key: Key)

@@ -38,10 +38,10 @@ object Page:
       mainRoute,
       helloRoute
     ),
-    getPageTitle = _ => "hello"
-    // case Hello(Bla(value)) => s"Hello $value"
-    // case _                 => "Hello"
-    ,
+    getPageTitle = {
+      case Index          => "Hello from Smithy4s!"
+      case KeySummary(id) => s"Summary for key ${id.value}"
+    },
     serializePage = pg => pg.asJson.noSpaces,
     deserializePage = str =>
       io.circe.scalajs.decodeJs[Page](JSON.parse(str)).fold(throw _, identity)
