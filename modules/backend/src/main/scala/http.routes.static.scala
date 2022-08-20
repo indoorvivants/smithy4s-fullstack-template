@@ -9,7 +9,7 @@ object Static:
   def routes =
     val indexHtml = StaticFile
       .fromResource[IO](
-        "index.html",
+        "assets/index.html",
         None,
         preferGzipped = true
       )
