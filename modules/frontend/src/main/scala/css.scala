@@ -19,6 +19,11 @@ object Styles extends StyleSheet.Inline, Common:
     fontSize(2.rem)
   )
 
+  val inp = style(
+    padding(10.px),
+    fontSize(2.rem)
+  )
+
   val rows = style(
     display.flex,
     flexDirection.column,
@@ -30,9 +35,20 @@ object Styles extends StyleSheet.Inline, Common:
   val row = style(
     display.flex,
     flexDirection.row,
-    justifyContent.spaceEvenly,
+    justifyContent.spaceBetween,
     gap(15.px),
     borderBottom(1.px, dashed, white)
+  )
+
+  val addForm = style(
+    display.flex,
+    flexDirection.row,
+    justifyContent.center,
+    gap(15.px),
+    border(2.px, solid, white),
+    borderRadius(15.px),
+    padding(10.px),
+    marginBottom(50.px)
   )
 
   val key = style(

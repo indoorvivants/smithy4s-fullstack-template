@@ -62,25 +62,30 @@ def indexPage(using
       .onComplete(_ => notification)
   }
 
+  val addForm = AddKeyForm(Observer(s => println(s)))
+
   div(
-    Styles.rows,
-    children <--
-      events.toObservable.startWithNone.flatMap { _ =>
-        api
-          .stream(_.hello.getAll())
-          .map(_.pairs)
-          .map { pairs =>
-            pairs.map { pair =>
-              div(
-                Styles.row,
-                div(Styles.key, pair.key.value),
-                div(Styles.value, pair.value.value),
-                button("+", Styles.btn, increment(pair.key)),
-                button("-", Styles.btn, decrement(pair.key)),
-                a(Styles.bigRedCross, "X", href := "#", delete(pair.key))
-              )
+    addForm.node,
+    div(
+      Styles.rows,
+      children <--
+        events.toObservable.startWithNone.flatMap { _ =>
+          api
+            .stream(_.hello.getAll())
+            .map(_.pairs)
+            .map { pairs =>
+              pairs.map { pair =>
+                div(
+                  Styles.row,
+                  div(Styles.key, pair.key.value),
+                  div(Styles.value, pair.value.value),
+                  button("+", Styles.btn, increment(pair.key)),
+                  button("-", Styles.btn, decrement(pair.key)),
+                  a(Styles.bigRedCross, "X", href := "#", delete(pair.key))
+                )
+              }
             }
-          }
-      }
+        }
+    )
   )
 end indexPage
