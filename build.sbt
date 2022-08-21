@@ -210,7 +210,7 @@ ThisBuild / concurrentRestrictions ++= {
 }
 
 ThisBuild / version ~= (_.replace('+', '-'))
-ThisBuild / dynver  ~= (_.replace('+', '-'))
+ThisBuild / dynver ~= (_.replace('+', '-'))
 
 lazy val versionDump =
   taskKey[Unit]("Dumps the version in a file named version")
