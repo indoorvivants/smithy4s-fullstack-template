@@ -15,10 +15,10 @@ object DoobieDatabase:
   def build(creds: PgCredentials) =
     val ta = Transactor
       .fromDriverManager[IO](
-        "org.postgresql.Driver",              // driver classname
-        s"jdbc:postgresql:${creds.database}", // connect URL (driver-specific)
-        s"${creds.user}",                     // user
-        creds.password.getOrElse("")          // password
+        "org.postgresql.Driver", // driver classname
+        s"jdbc:postgresql://${creds.host}:${creds.port}/${creds.database}", // connect URL (driver-specific)
+        s"${creds.user}",            // user
+        creds.password.getOrElse("") // password
       )
     DoobieDatabase(ta)
 end DoobieDatabase

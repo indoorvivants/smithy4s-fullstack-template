@@ -42,17 +42,21 @@ def bootstrap(
     )
     cloudDb = cliConfig.cloud match
       case Cloud.Flyio => FlyioBootstrap.pgCredentials(env)
+
     pgCredentials = cloudDb.getOrElse(PgCredentials.from(env))
+
     services = Services.build(
       logger,
       DoobieDatabase.build(pgCredentials)
     )
+
     routes <- Routes.build(
       services,
       (req, exc) => logger.error(s"[HTTP REQUEST FAILED] $req", exc)
     )
 
-    _      <- migrate(pgCredentials)
+    _ <- migrate(pgCredentials)
+
     server <- Server(httpConfig, routes)
   yield server
   end for
