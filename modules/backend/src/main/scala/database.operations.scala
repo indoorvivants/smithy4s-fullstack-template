@@ -40,10 +40,10 @@ object operations:
           .map(Pair.apply)
       )
 
-  case class Create(key: Key)
+  case class Create(key: Key, value: Option[Value])
       extends SqlUpdate(
         key,
-        sql"insert into examples (key, value) values (${key.value}, 0)".update
+        sql"insert into examples (key, value) values (${key.value}, ${value.map(_.value).getOrElse(0)})".update
       )
 
   case class Delete(key: Key)

@@ -62,7 +62,13 @@ def indexPage(using
       .onComplete(_ => notification)
   }
 
-  val addForm = AddKeyForm(Observer(s => println(s)))
+  val addForm = AddKeyForm(
+    Observer(pair =>
+      api
+        .future(_.hello.create(pair.key, Some(pair.value)))
+        .onComplete(_ => notification)
+    )
+  )
 
   div(
     addForm.node,

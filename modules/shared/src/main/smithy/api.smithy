@@ -58,6 +58,8 @@ operation Create {
   input := {
     @required 
     key: Key
+
+    value: Value
   }
 
   errors: [KeyAlreadyExists]
