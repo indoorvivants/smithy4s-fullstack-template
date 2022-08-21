@@ -5,8 +5,7 @@ case class PgCredentials(
     port: Int,
     user: String,
     database: String,
-    password: Option[String],
-    ssl: Boolean
+    password: Option[String]
 )
 
 object PgCredentials:
@@ -16,7 +15,6 @@ object PgCredentials:
       port = mp.getOrElse("PG_PORT", "5432").toInt,
       user = mp.getOrElse("PG_USER", "postgres"),
       database = mp.getOrElse("PG_DB", "postgres"),
-      password = mp.get("PG_PASSWORD"),
-      ssl = false
+      password = mp.get("PG_PASSWORD")
     )
 end PgCredentials
