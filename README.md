@@ -15,6 +15,9 @@ It is a dialed down version of the [Jobby app](https://jobby-smithy4s.herokuapp.
 The blog series should answer a lot of the design questions you might have in much 
 greater detail than the margins of this tome allow.
 
+![2022-08-22 17 21 03](https://user-images.githubusercontent.com/1052965/185972992-fb49f348-a33d-4e1a-aafa-7f9a01d3a9c1.gif)
+
+
 ## What is it for?
 
 I'm building this template mainly for myself - there's a whole menagerie of borderline
