@@ -16,7 +16,6 @@ val Versions = new {
   val Laminar        = "0.14.2"
   val waypoint       = "0.5.0"
   val scalacss       = "1.0.0"
-  val monocle        = "3.1.0"
   val circe          = "0.14.2"
   val doobie         = "1.0.0-RC2"
 }
