@@ -22,7 +22,12 @@ jobs:
           java-version: '17'
           cache: 'sbt'
 
-      - run: sbt app/Docker/publishLocal versionDump
+      - name: Tests 
+        run: |
+          sbt --client fastTests 
+          sbt --client integrationTests
+
+      - run: sbt --client 'app/Docker/publishLocal; versionDump'
         env:
           RELEASE: yesh
 

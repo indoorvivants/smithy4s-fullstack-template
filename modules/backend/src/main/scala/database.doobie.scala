@@ -4,7 +4,7 @@ import cats.*, cats.data.*, cats.implicits.*
 import doobie.*, doobie.implicits.*
 import cats.effect.IO
 
-class DoobieDatabase(transactor: Transactor[IO]) extends Database:
+class DoobieDatabase private (transactor: Transactor[IO]) extends Database:
   override def stream[I, O](query: SqlOp[I, O]): fs2.Stream[cats.effect.IO, O] =
     query match
       case sq: SqlQuery[I, O] => sq.out.stream.transact(transactor)

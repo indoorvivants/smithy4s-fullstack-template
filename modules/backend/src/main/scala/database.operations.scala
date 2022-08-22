@@ -29,7 +29,9 @@ object operations:
   case class Get(key: Key)
       extends SqlQuery(
         key,
-        sql"select value from examples where key = ${key.value}".query[Int]
+        sql"select value from examples where key = ${key.value}"
+          .query[Int]
+          .map(Value.apply)
       )
 
   case object GetAll

@@ -10,7 +10,7 @@ class HelloImplementation(logger: Scribe[IO], database: Database)
     extends HelloService[IO]:
   override def get(key: Key): IO[GetOutput] =
     database.option(operations.Get(key)).flatMap {
-      case Some(value) => GetOutput(Value(value)).pure[IO]
+      case Some(value) => GetOutput(value).pure[IO]
       case None        => IO.raiseError(KeyNotFound())
     }
 

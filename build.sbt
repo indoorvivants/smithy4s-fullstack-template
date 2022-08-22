@@ -94,17 +94,8 @@ lazy val backend = projectMatrix
       "com.outr"     %% "scribe-cats"     % Versions.scribe,
       "com.outr"     %% "scribe-slf4j"    % Versions.scribe,
       "org.tpolecat" %% "doobie-core"     % Versions.doobie,
-      "org.tpolecat" %% "doobie-postgres" % Versions.doobie,
-      // test dependencies
-      "com.dimafeng" %% "testcontainers-scala-postgresql" % Versions.TestContainers % Test,
-      "com.disneystreaming" %% "weaver-cats"         % Versions.Weaver   % Test,
-      "org.http4s"          %% "http4s-ember-server" % Versions.http4s   % Test,
-      "org.http4s"          %% "http4s-ember-client" % Versions.http4s   % Test,
-      "org.postgresql"       % "postgresql"          % Versions.Postgres % Test,
-      "org.flywaydb"         % "flyway-core"         % Versions.Flyway   % Test
+      "org.tpolecat" %% "doobie-postgres" % Versions.doobie
     ),
-    testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
-    Test / fork             := true,
     Compile / doc / sources := Seq.empty
   )
 
@@ -150,6 +141,27 @@ lazy val frontend = projectMatrix
     )
   )
 
+lazy val tests = projectMatrix
+  .in(file("modules/tests"))
+  .dependsOn(app)
+  .defaultAxes(defaults*)
+  .jvmPlatform(Seq(Versions.Scala))
+  .settings(
+    scalaVersion := Versions.Scala,
+    libraryDependencies ++= Seq(
+      // test dependencies
+      "com.dimafeng" %% "testcontainers-scala-postgresql" % Versions.TestContainers % Test,
+      "com.disneystreaming" %% "weaver-cats"         % Versions.Weaver   % Test,
+      "org.http4s"          %% "http4s-ember-server" % Versions.http4s   % Test,
+      "org.http4s"          %% "http4s-ember-client" % Versions.http4s   % Test,
+      "org.postgresql"       % "postgresql"          % Versions.Postgres % Test,
+      "org.flywaydb"         % "flyway-core"         % Versions.Flyway   % Test
+    ),
+    testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
+    Test / fork             := true,
+    Compile / doc / sources := Seq.empty
+  )
+
 lazy val defaults =
   Seq(VirtualAxis.scalaABIVersion(Versions.Scala), VirtualAxis.jvm)
 
@@ -170,19 +182,19 @@ lazy val isRelease = sys.env.get("RELEASE").contains("yesh")
 
 addCommandAlias(
   "stubTests",
-  s"backend/testOnly ${Config.BasePackage}.tests.stub.*"
+  s"tests/testOnly ${Config.BasePackage}.tests.stub.*"
 )
 addCommandAlias(
   "unitTests",
-  s"backend/testOnly ${Config.BasePackage}.tests.unit.*"
+  s"tests/testOnly ${Config.BasePackage}.tests.unit.*"
 )
 addCommandAlias(
   "fastTests",
-  s"backend/testOnly ${Config.BasePackage}.tests.stub.* ${Config.BasePackage}.tests.unit.*"
+  s"tests/testOnly ${Config.BasePackage}.tests.stub.* ${Config.BasePackage}.tests.unit.*"
 )
 addCommandAlias(
   "integrationTests",
-  s"backend/testOnly ${Config.BasePackage}.tests.integration.*"
+  s"tests/testOnly ${Config.BasePackage}.tests.integration.*"
 )
 
 lazy val buildFrontend = taskKey[Unit]("")
