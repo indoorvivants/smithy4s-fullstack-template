@@ -8,6 +8,7 @@ This is a full-stack Scala application (simple key-value management store), made
 3. [Scala.js](https://www.scala-js.org) and [Laminar](https://laminar.dev) for the [SPA](https://en.wikipedia.org/wiki/Single-page_application) frontend
 4. [PostgreSQL](https://www.postgresql.org) and [Doobie](https://tpolecat.github.io/doobie/) for database access 
 5. [Weaver-Test](https://disneystreaming.github.io/weaver-test/) for unit and integration testing
+6. [Playwright](https://playwright.dev/) tests for frontend testing, using the dedicated [Weaver integration](https://github.com/indoorvivants/weaver-playwright)
 
 The entire app is auto-deployed to [Fly.io](https://fly.io), you can see the **live version [here](https://smithy4s-fullstack-template.fly.dev)**
 
