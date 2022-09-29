@@ -56,23 +56,23 @@ lazy val app = projectMatrix
       "org.flywaydb"   % "flyway-core"         % Versions.Flyway
     ),
     // embedding frontend in backend's resources
-    /* Compile / resourceGenerators += { */
-    /*   if (isRelease) */
-    /*     Def.task[Seq[File]] { */
-    /*       val location = frontendBundle.value.getParentFile() */
+    Compile / resourceGenerators += {
+      if (isRelease)
+        Def.task[Seq[File]] {
+          val location = frontendBundle.value.getParentFile()
 
-    /*       val outDir = (Compile / resourceManaged).value / "assets" */
-    /*       IO.listFiles(location).toList.map { file => */
-    /*         val (name, ext) = file.baseAndExt */
-    /*         val out         = outDir / (name + "." + ext) */
+          val outDir = (Compile / resourceManaged).value / "assets"
+          IO.listFiles(location).toList.map { file =>
+            val (name, ext) = file.baseAndExt
+            val out         = outDir / (name + "." + ext)
 
-    /*         IO.copyFile(file, out) */
+            IO.copyFile(file, out)
 
-    /*         out */
-    /*       } */
-    /*     } */
-    /*   else Def.task { Seq.empty[File] } */
-    /* }, */
+            out
+          }
+        }
+      else Def.task { Seq.empty[File] }
+    },
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     Test / fork             := true,
     reStart / baseDirectory := (ThisBuild / baseDirectory).value,
@@ -169,13 +169,9 @@ lazy val tests = projectMatrix
         .task[Seq[File]] {
           val location = frontendBundle.value
 
-          println(location)
-
           val outDir = (Compile / resourceManaged).value / "assets" / "main.js"
 
           IO.copyFile(location, outDir)
-
-          println(outDir)
 
           Seq(outDir)
         }
