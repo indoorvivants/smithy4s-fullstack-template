@@ -24,12 +24,15 @@ private def ntPut[T: Put](nt: Newtype[T]): Put[nt.Type] =
 given Get[Key]   = ntGet(Key)
 given Get[Value] = ntGet(Value)
 
+given Put[Key]   = ntPut(Key)
+given Put[Value] = ntPut(Value)
+
 object operations:
 
   case class Get(key: Key)
       extends SqlQuery(
         key,
-        sql"select value from examples where key = ${key.value}"
+        sql"select value from examples where key = $key"
           .query[Int]
           .map(Value.apply)
       )
@@ -45,30 +48,30 @@ object operations:
   case class Create(key: Key, value: Option[Value])
       extends SqlUpdate(
         key,
-        sql"insert into examples (key, value) values (${key.value}, ${value.map(_.value).getOrElse(0)})".update
+        sql"insert into examples (key, value) values ($key, ${value.map(_.value).getOrElse(0)})".update
       )
 
   case class Delete(key: Key)
       extends SqlUpdate(
         key,
-        sql"delete from examples where key = ${key.value}".update
+        sql"delete from examples where key = $key".update
       )
 
   case class Inc(key: Key)
       extends SqlUpdate(
         key,
-        sql"update examples set value = value + 1 where key = ${key.value}".update
+        sql"update examples set value = value + 1 where key = $key".update
       )
 
   case class Dec(key: Key)
       extends SqlUpdate(
         key,
-        sql"update examples set value = value - 1 where key = ${key.value}".update
+        sql"update examples set value = value - 1 where key = $key".update
       )
 
   case class Update(key: Key, value: Value)
       extends SqlUpdate(
         key,
-        sql"update examples set value = ${value.value} where key = ${key.value}".update
+        sql"update examples set value = ${value.value} where key = $key".update
       )
 end operations

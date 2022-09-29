@@ -12,7 +12,8 @@ val Versions = new {
   val Flyway         = "9.3.1"
   val Postgres       = "42.5.0"
   val TestContainers = "0.40.9"
-  val Weaver         = "0.7.13"
+  val Weaver         = "0.8.0"
+  val Playwright     = "0.0.3"
   val Laminar        = "0.14.5"
   val waypoint       = "0.5.0"
   val scalacss       = "1.0.0"
@@ -154,8 +155,24 @@ lazy val tests = projectMatrix
       "org.http4s"          %% "http4s-ember-server" % Versions.http4s   % Test,
       "org.http4s"          %% "http4s-ember-client" % Versions.http4s   % Test,
       "org.postgresql"       % "postgresql"          % Versions.Postgres % Test,
-      "org.flywaydb"         % "flyway-core"         % Versions.Flyway   % Test
+      "org.flywaydb"         % "flyway-core"         % Versions.Flyway   % Test,
+      "com.indoorvivants.playwright" %% "weaver" % Versions.Playwright % Test
     ),
+    Compile / resourceGenerators += {
+      Def.task[Seq[File]] {
+        val (_, location) = (ThisBuild / frontendOutput).value
+
+        val outDir = (Compile / resourceManaged).value / "assets"
+        IO.listFiles(location).toList.map { file =>
+          val (name, ext) = file.baseAndExt
+          val out         = outDir / (name + "." + ext)
+
+          IO.copyFile(file, out)
+
+          out
+        }
+      }
+    },
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     Test / fork             := true,
     Compile / doc / sources := Seq.empty
@@ -196,6 +213,11 @@ addCommandAlias(
   s"tests/testOnly ${Config.BasePackage}.tests.integration.*"
 )
 
+addCommandAlias(
+  "playwrightTests",
+  s"tests/testOnly ${Config.BasePackage}.tests.playwright.*"
+)
+
 lazy val buildFrontend = taskKey[Unit]("")
 
 buildFrontend := {
@@ -230,3 +252,38 @@ versionDump := {
   val file = (ThisBuild / baseDirectory).value / "version"
   IO.write(file, (Compile / version).value)
 }
+
+import sbtwelcome.*
+
+logo :=
+  s"""
+     | ##### ###### #    # #####  #        ##   ##### ###### 
+     |   #   #      ##  ## #    # #       #  #    #   #      
+     |   #   #####  # ## # #    # #      #    #   #   #####  
+     |   #   #      #    # #####  #      ######   #   #      
+     |   #   #      #    # #      #      #    #   #   #      
+     |   #   ###### #    # #      ###### #    #   #   ######
+     |
+     |Version: ${version.value}
+     |
+     |${scala.Console.YELLOW}Scala ${(app.jvm(
+      true
+    ) / scalaVersion).value}${scala.Console.RESET}
+     |
+     |""".stripMargin
+
+logoColor := scala.Console.MAGENTA
+
+usefulTasks := Seq(
+  UsefulTask("ft", "fastTests", "Unit and stub tests - fast, only in memory"),
+  UsefulTask(
+    "it",
+    "integrationTests",
+    "Integration tests - run against Docker container, slower than fast"
+  ),
+  UsefulTask(
+    "pt",
+    "playwrightTests",
+    "Playwright tests - verify frontend works in a browser, slower than slow"
+  )
+)

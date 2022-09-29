@@ -4,6 +4,7 @@ import scalacss.ProdDefaults.*
 import scalacss.internal.StyleA
 import com.raquo.laminar.api.L.*
 import scalacss.internal.Attrs.direction
+import scalacss.internal.Attr
 
 trait Common extends scalacss.internal.mutable.StyleSheet.Base:
   import dsl.*

@@ -23,6 +23,7 @@ object AddKeyForm:
         div(
           Styles.addForm,
           input(
+            idAttr      := "input-key",
             tpe         := "text",
             placeholder := "key",
             value <-- keyVar.signal.map(_.getOrElse("")),
@@ -32,6 +33,7 @@ object AddKeyForm:
             Styles.inp
           ),
           input(
+            idAttr      := "input-value",
             tpe         := "text",
             placeholder := "value",
             value <-- valueVar.signal.map(_.toString),
@@ -40,7 +42,7 @@ object AddKeyForm:
               .map(_.getOrElse(0)) --> valueVar.writer,
             Styles.inp
           ),
-          button(tpe := "submit", "add", Styles.btn)
+          button(tpe := "submit", idAttr := "input-submit", "add", Styles.btn)
         )
       )
 

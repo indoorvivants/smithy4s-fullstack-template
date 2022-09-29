@@ -40,7 +40,6 @@ def renderPage(using
 )(using Api, EventBus[Event]): Signal[HtmlElement] =
   SplitRender[Page, HtmlElement](router.$currentPage)
     .collectStatic(Page.Index)(indexPage)
-    // .collectSignal[Page.KeySummary](pages.job)
     .$view
 
 def indexPage(using
@@ -83,11 +82,31 @@ def indexPage(using
               pairs.map { pair =>
                 div(
                   Styles.row,
-                  div(Styles.key, pair.key.value),
-                  div(Styles.value, pair.value.value),
-                  button("+", Styles.btn, increment(pair.key)),
-                  button("-", Styles.btn, decrement(pair.key)),
-                  a(Styles.bigRedCross, "X", href := "#", delete(pair.key))
+                  div(Styles.key, pair.key.value, className := "item-key"),
+                  div(
+                    Styles.value,
+                    pair.value.value,
+                    className := "item-value"
+                  ),
+                  button(
+                    "+",
+                    Styles.btn,
+                    increment(pair.key),
+                    className := "item-increment-button"
+                  ),
+                  button(
+                    "-",
+                    Styles.btn,
+                    decrement(pair.key),
+                    className := "item-decrement-button"
+                  ),
+                  a(
+                    Styles.bigRedCross,
+                    "X",
+                    href := "#",
+                    delete(pair.key),
+                    className := "item-delete-button"
+                  )
                 )
               }
             }
