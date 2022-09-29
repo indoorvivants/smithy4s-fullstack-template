@@ -57,27 +57,27 @@ lazy val app = projectMatrix
     ),
     // embedding frontend in backend's resources
     Compile / resourceGenerators += {
-      if (isRelease)
-        Def.task[Seq[File]] {
-          val location = frontendBundle.value.getParentFile()
-
-          val outDir = (Compile / resourceManaged).value / "assets"
-          IO.listFiles(location).toList.map { file =>
-            val (name, ext) = file.baseAndExt
-            val out         = outDir / (name + "." + ext)
-
-            IO.copyFile(file, out)
-
-            out
-          }
-        }
-      else Def.task { Seq.empty[File] }
+      Def.task[Seq[File]] {
+        copyAll(
+          frontendBundle.value,
+          (Compile / resourceManaged).value / "assets"
+        )
+      }
     },
-    testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
-    Test / fork             := true,
     reStart / baseDirectory := (ThisBuild / baseDirectory).value,
     run / baseDirectory     := (ThisBuild / baseDirectory).value
   )
+
+def copyAll(location: File, outDir: File) = {
+  IO.listFiles(location).toList.map { file =>
+    val (name, ext) = file.baseAndExt
+    val out         = outDir / (name + "." + ext)
+
+    IO.copyFile(file, out)
+
+    out
+  }
+}
 
 lazy val backend = projectMatrix
   .in(file("modules/backend"))
@@ -165,17 +165,12 @@ lazy val tests = projectMatrix
       "com.indoorvivants.playwright" %% "weaver" % Versions.Playwright % Test
     ),
     Compile / resourceGenerators += {
-      Def
-        .task[Seq[File]] {
-          val location = frontendBundle.value
-
-          val outDir = (Compile / resourceManaged).value / "assets" / "main.js"
-
-          IO.copyFile(location, outDir)
-
-          Seq(outDir)
-        }
-        .taskValue
+      Def.task[Seq[File]] {
+        copyAll(
+          frontendBundle.value,
+          (Compile / resourceManaged).value / "assets"
+        )
+      }
     },
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     Test / fork             := true,
@@ -205,10 +200,13 @@ ThisBuild / frontendBundle := (Def.taskIf {
     Versions.Scala
   )
 
-  if (isRelease)
-    (proj / Compile / fullOptJS).value.data
-  else
-    (proj / Compile / fastOptJS).value.data
+  if (isRelease) {
+    val res = (proj / Compile / fullLinkJS).value
+    (proj / Compile / fullLinkJS / scalaJSLinkerOutputDirectory).value
+  } else {
+    val res = (proj / Compile / fastLinkJS).value
+    (proj / Compile / fastLinkJS / scalaJSLinkerOutputDirectory).value
+  }
 }).value
 
 lazy val isRelease = sys.env.get("RELEASE").contains("yesh")
@@ -233,6 +231,11 @@ addCommandAlias(
 addCommandAlias(
   "playwrightTests",
   s"tests/testOnly ${Config.BasePackage}.tests.playwright.*"
+)
+
+addCommandAlias(
+  "publishDocker",
+  "app/Docker/publishLocal"
 )
 
 lazy val buildFrontend = taskKey[Unit]("")
@@ -302,5 +305,6 @@ usefulTasks := Seq(
     "pt",
     "playwrightTests",
     "Playwright tests - verify frontend works in a browser, slower than slow"
-  )
+  ),
+  UsefulTask("pd", "publishDocker", "Publish app's docker container")
 )
