@@ -11,7 +11,7 @@ def bootstrap(
 ): Resource[IO, Server] =
   val logger = scribe.cats.io
   val cliConfig =
-    CLIConfig(None, Option(new File("env.opts")), Deployment.Local, Cloud.Flyio)
+    CLIConfig(None, Option(new File(".env")), Deployment.Local, Cloud.Flyio)
 
   val opts = cliConfig.optsFile match
     case None => IO(Map.empty)
