@@ -1,7 +1,7 @@
 package hellosmithy4s
 
 import cats.*, cats.data.*, cats.implicits.*
-import doobie.*, doobie.implicits.*
+import doobie.*, doobie.implicits.*, doobie.hikari.*
 import cats.effect.IO
 
 class DoobieDatabase private (transactor: Transactor[IO]) extends Database:
@@ -12,13 +12,17 @@ class DoobieDatabase private (transactor: Transactor[IO]) extends Database:
 end DoobieDatabase
 
 object DoobieDatabase:
-  def build(creds: PgCredentials) =
-    val ta = Transactor
-      .fromDriverManager[IO](
-        "org.postgresql.Driver", // driver classname
-        s"jdbc:postgresql://${creds.host}:${creds.port}/${creds.database}", // connect URL (driver-specific)
-        s"${creds.user}",            // user
-        creds.password.getOrElse("") // password
-      )
-    DoobieDatabase(ta)
+  def hikari(creds: PgCredentials) =
+    ExecutionContexts
+      .fixedThreadPool[IO](32)
+      .flatMap { ec =>
+        HikariTransactor.newHikariTransactor(
+          "org.postgresql.Driver", // driver classname
+          s"jdbc:postgresql://${creds.host}:${creds.port}/${creds.database}", // connect URL (driver-specific)
+          s"${creds.user}",             // user
+          creds.password.getOrElse(""), // password
+          ec
+        )
+      }
+      .map(new DoobieDatabase(_))
 end DoobieDatabase

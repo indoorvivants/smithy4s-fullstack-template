@@ -45,9 +45,11 @@ def bootstrap(
 
     pgCredentials = cloudDb.getOrElse(PgCredentials.from(env))
 
+    db <- DoobieDatabase.hikari(pgCredentials)
+
     services = Services.build(
       logger,
-      DoobieDatabase.build(pgCredentials)
+      db
     )
 
     routes <- Routes.build(

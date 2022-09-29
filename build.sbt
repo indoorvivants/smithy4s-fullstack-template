@@ -91,7 +91,8 @@ lazy val backend = projectMatrix
       "com.outr"     %% "scribe-cats"     % Versions.scribe,
       "com.outr"     %% "scribe-slf4j"    % Versions.scribe,
       "org.tpolecat" %% "doobie-core"     % Versions.doobie,
-      "org.tpolecat" %% "doobie-postgres" % Versions.doobie
+      "org.tpolecat" %% "doobie-postgres" % Versions.doobie,
+      "org.tpolecat" %% "doobie-hikari"   % Versions.doobie
     ),
     Compile / doc / sources := Seq.empty
   )

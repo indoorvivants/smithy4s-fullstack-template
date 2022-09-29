@@ -64,7 +64,7 @@ def doobieDatabase =
         database = cont.databaseName
       )
 
-      Resource.eval(IO(DoobieDatabase.build(pgConfig)))
+      DoobieDatabase.hikari(pgConfig)
     }
 
 private def migrate(url: String, user: String, password: String) =
