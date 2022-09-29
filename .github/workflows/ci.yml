@@ -22,10 +22,14 @@ jobs:
           java-version: '17'
           cache: 'sbt'
 
-      - name: Tests 
-        run: |
-          sbt --client fastTests 
-          sbt --client integrationTests
+      - name: Fast tests
+        run: sbt --client fastTests 
+          
+      - name: Integration tests 
+        run: sbt --client integrationTests
+
+      - name: Frontend tests 
+        run: sbt --client playwrightTests
 
       - run: sbt 'app/Docker/publishLocal; versionDump'
         env:
