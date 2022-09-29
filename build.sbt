@@ -58,23 +58,23 @@ lazy val app = projectMatrix
       "org.flywaydb"   % "flyway-core"         % Versions.Flyway
     ),
     // embedding frontend in backend's resources
-    Compile / resourceGenerators += {
-      if (isRelease)
-        Def.task[Seq[File]] {
-          val (_, location) = (ThisBuild / frontendOutput).value
+    /* Compile / resourceGenerators += { */
+    /*   if (isRelease) */
+    /*     Def.task[Seq[File]] { */
+    /*       val location = frontendBundle.value.getParentFile() */
 
-          val outDir = (Compile / resourceManaged).value / "assets"
-          IO.listFiles(location).toList.map { file =>
-            val (name, ext) = file.baseAndExt
-            val out         = outDir / (name + "." + ext)
+    /*       val outDir = (Compile / resourceManaged).value / "assets" */
+    /*       IO.listFiles(location).toList.map { file => */
+    /*         val (name, ext) = file.baseAndExt */
+    /*         val out         = outDir / (name + "." + ext) */
 
-            IO.copyFile(file, out)
+    /*         IO.copyFile(file, out) */
 
-            out
-          }
-        }
-      else Def.task { Seq.empty[File] }
-    },
+    /*         out */
+    /*       } */
+    /*     } */
+    /*   else Def.task { Seq.empty[File] } */
+    /* }, */
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     Test / fork             := true,
     reStart / baseDirectory := (ThisBuild / baseDirectory).value,
@@ -113,15 +113,25 @@ lazy val shared = projectMatrix
 
 lazy val frontend = projectMatrix
   .in(file("modules/frontend"))
-  .jsPlatform(Seq(Versions.Scala))
+  .customRow(
+    Seq(Versions.Scala),
+    axisValues = Seq(VirtualAxis.js, BuildStyle.SingleFile),
+    Seq.empty
+  )
+  .customRow(
+    Seq(Versions.Scala),
+    axisValues = Seq(VirtualAxis.js, BuildStyle.Modules),
+    Seq.empty
+  )
   .defaultAxes((defaults :+ VirtualAxis.js)*)
   .dependsOn(shared)
   .enablePlugins(ScalaJSPlugin)
   .settings(
     scalaJSUseMainModuleInitializer := true,
-    scalaJSLinkerConfig ~= { config =>
+    scalaJSLinkerConfig := {
+      val config = scalaJSLinkerConfig.value
       import org.scalajs.linker.interface.OutputPatterns
-      if (isRelease) config
+      if (virtualAxes.value.contains(BuildStyle.SingleFile)) config
       else
         config
           .withModuleSplitStyle(
@@ -160,18 +170,18 @@ lazy val tests = projectMatrix
     ),
     Compile / resourceGenerators += {
       Def.task[Seq[File]] {
-        val (_, location) = (ThisBuild / frontendOutput).value
+        val location = frontendBundle.value
 
-        val outDir = (Compile / resourceManaged).value / "assets"
-        IO.listFiles(location).toList.map { file =>
-          val (name, ext) = file.baseAndExt
-          val out         = outDir / (name + "." + ext)
+        println(location)
 
-          IO.copyFile(file, out)
+        val outDir = (Compile / resourceManaged).value/ "assets" / "main.js"
 
-          out
-        }
-      }
+        IO.copyFile(location, outDir)
+
+        println(outDir)
+
+        Seq(outDir)
+      }.taskValue
     },
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     Test / fork             := true,
@@ -181,18 +191,31 @@ lazy val tests = projectMatrix
 lazy val defaults =
   Seq(VirtualAxis.scalaABIVersion(Versions.Scala), VirtualAxis.jvm)
 
-lazy val frontendOutput = taskKey[(Report, File)]("")
+lazy val frontendModules = taskKey[(Report, File)]("")
+ThisBuild / frontendModules := (Def.taskIf {
+  def proj = frontend.finder(BuildStyle.Modules)(
+    Versions.Scala
+  )
 
-lazy val frontendJS = frontend.js(Versions.Scala)
-
-ThisBuild / frontendOutput := {
   if (isRelease)
-    (frontendJS / Compile / fullLinkJS).value.data ->
-      (frontendJS / Compile / fullLinkJS / scalaJSLinkerOutputDirectory).value
+    (proj / Compile / fullLinkJS).value.data ->
+      (proj / Compile / fullLinkJS / scalaJSLinkerOutputDirectory).value
   else
-    (frontendJS / Compile / fastLinkJS).value.data ->
-      (frontendJS / Compile / fastLinkJS / scalaJSLinkerOutputDirectory).value
-}
+    (proj / Compile / fastLinkJS).value.data ->
+      (proj / Compile / fastLinkJS / scalaJSLinkerOutputDirectory).value
+}).value
+
+lazy val frontendBundle = taskKey[File]("")
+ThisBuild / frontendBundle := (Def.taskIf {
+  def proj = frontend.finder(BuildStyle.Modules)(
+    Versions.Scala
+  )
+
+  if (isRelease)
+    (proj / Compile / fullOptJS).value.data
+  else
+    (proj / Compile / fastOptJS).value.data
+}).value
 
 lazy val isRelease = sys.env.get("RELEASE").contains("yesh")
 
@@ -221,7 +244,7 @@ addCommandAlias(
 lazy val buildFrontend = taskKey[Unit]("")
 
 buildFrontend := {
-  val (_, folder) = frontendOutput.value
+  val (_, folder) = frontendModules.value
   val buildDir    = (ThisBuild / baseDirectory).value / "build" / "frontend"
 
   val indexHtml = buildDir / "index.html"

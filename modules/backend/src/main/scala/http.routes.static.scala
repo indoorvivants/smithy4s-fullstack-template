@@ -18,6 +18,7 @@ object Static:
     Resource.pure(HttpRoutes.of[IO] {
       case req @ GET -> Root / "assets" / filename
           if filename.endsWith(".js") || filename.endsWith(".js.map") =>
+        println(getClass().getResource("assets/main.js"))
         StaticFile
           .fromResource[IO](
             Paths.get("assets", filename).toString,

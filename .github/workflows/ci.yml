@@ -22,6 +22,13 @@ jobs:
           java-version: '17'
           cache: 'sbt'
 
+      - name: Cache Playwright
+        id: cache-primes
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright
+
       - name: Fast tests
         run: sbt --client fastTests 
           

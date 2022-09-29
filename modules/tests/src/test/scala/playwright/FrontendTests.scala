@@ -21,7 +21,7 @@ case class Resources(
 object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
   override type Res = Resources
   override def sharedResource =
-    integration.buildApp.product(PlaywrightRuntime.create()).map {
+    integration.buildApp.parProduct(PlaywrightRuntime.create()).map {
       case ((probe, server), pw) =>
         Resources(probe, server.baseUri, pw)
     }
@@ -33,6 +33,7 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
   test("basics") { pb =>
     getPageContext(pb).use { pc =>
       for
+        _ <- pc.page(_.setDefaultTimeout(3000))
         _ <- pc.page(_.navigate(pb.baseUri.toString))
         _ <- eventually(pc.page(_.title)) { title =>
           expect.same(title, "Hello from Smithy4s!")
@@ -46,16 +47,13 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
     getPageContext(pb).use { pc =>
       val pf = PageFragments(pc)
       for
-        _ <- pc.page(_.navigate(pb.baseUri.toString))
-
-        _ <- pf.createKey(keyName, 211)
-
+        _   <- pc.page(_.setDefaultTimeout(10000))
+        _   <- pc.page(_.navigate(pb.baseUri.toString))
+        _   <- pf.createKey(keyName, 211)
         idx <- pf.waitUntilKeyAppears(keyName)
-
         value = pc
           .locator(s".item-value >> nth=$idx")
           .map(_.first().textContent())
-
         _ <- eventually(value) { text =>
           expect(text == "211")
         }
@@ -69,16 +67,13 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
     getPageContext(pb).use { pc =>
       val pf = PageFragments(pc)
       for
-        _ <- pc.page(_.navigate(pb.baseUri.toString))
-
-        _ <- pf.createKey(keyName, 211)
-
+        _   <- pc.page(_.setDefaultTimeout(10000))
+        _   <- pc.page(_.navigate(pb.baseUri.toString))
+        _   <- pf.createKey(keyName, 211)
         idx <- pf.waitUntilKeyAppears(keyName)
-
         _ <- pc
           .locator(s".item-delete-button >> nth=$idx")
           .map(_.first().click())
-
         _ <- eventually(pf.keysOnPage) { keys =>
           expect(!keys.contains(keyName))
         }
@@ -94,13 +89,11 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
       val pf = PageFragments(pc)
 
       for
-        _ <- pc.page(_.navigate(pb.baseUri.toString))
-
+        _   <- pc.page(_.setDefaultTimeout(10000))
+        _   <- pc.page(_.navigate(pb.baseUri.toString))
         _   <- pf.createKey(keyName, keyValue)
         idx <- pf.waitUntilKeyAppears(keyName)
-
         valuesOnPage = pc.locator(".item-value").map(_.allInnerTexts().asScala)
-
         inc <- pc.locator(s".item-increment-button >> nth=$idx")
         dec <- pc.locator(s".item-decrement-button >> nth=$idx")
 
