@@ -30,10 +30,11 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
   override def retryPolicy: PlaywrightRetry =
     PlaywrightRetry.linear(20, 250.millis) // 5 seconds max
 
+  def configure(pc: PageContext) = pc.page(_.setDefaultTimeout(3000))
+
   test("basics") { pb =>
-    getPageContext(pb).use { pc =>
+    getPageContext(pb).evalTap(configure).use { pc =>
       for
-        _ <- pc.page(_.setDefaultTimeout(3000))
         _ <- pc.page(_.navigate(pb.baseUri.toString))
         _ <- eventually(pc.page(_.title)) { title =>
           expect.same(title, "Hello from Smithy4s!")
@@ -44,10 +45,9 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
 
   test("adding") { pb =>
     val keyName = "new key!"
-    getPageContext(pb).use { pc =>
+    getPageContext(pb).evalTap(configure).use { pc =>
       val pf = PageFragments(pc)
       for
-        _   <- pc.page(_.setDefaultTimeout(10000))
         _   <- pc.page(_.navigate(pb.baseUri.toString))
         _   <- pf.createKey(keyName, 211)
         idx <- pf.waitUntilKeyAppears(keyName)
@@ -64,10 +64,9 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
 
   test("deleting") { pb =>
     val keyName = "key-for-deletion"
-    getPageContext(pb).use { pc =>
+    getPageContext(pb).evalTap(configure).use { pc =>
       val pf = PageFragments(pc)
       for
-        _   <- pc.page(_.setDefaultTimeout(10000))
         _   <- pc.page(_.navigate(pb.baseUri.toString))
         _   <- pf.createKey(keyName, 211)
         idx <- pf.waitUntilKeyAppears(keyName)
@@ -85,11 +84,10 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
   test("incrementing/decrementing") { pb =>
     val keyName  = "inc-dec-key"
     val keyValue = 257
-    getPageContext(pb).use { pc =>
+    getPageContext(pb).evalTap(configure).use { pc =>
       val pf = PageFragments(pc)
 
       for
-        _   <- pc.page(_.setDefaultTimeout(10000))
         _   <- pc.page(_.navigate(pb.baseUri.toString))
         _   <- pf.createKey(keyName, keyValue)
         idx <- pf.waitUntilKeyAppears(keyName)

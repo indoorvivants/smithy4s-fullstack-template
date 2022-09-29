@@ -44,8 +44,6 @@ lazy val app = projectMatrix
   .jvmPlatform(Seq(Versions.Scala))
   .enablePlugins(JavaAppPackaging)
   .settings(
-    scalaVersion := Versions.Scala,
-
     // Docker configuration
     dockerBaseImage         := Config.DockerBaseImage,
     Compile / doc / sources := Seq.empty,
@@ -87,7 +85,6 @@ lazy val backend = projectMatrix
   .defaultAxes(defaults*)
   .jvmPlatform(Seq(Versions.Scala))
   .settings(
-    scalaVersion := Versions.Scala,
     libraryDependencies ++= Seq(
       "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
       "com.outr"     %% "scribe"          % Versions.scribe,
@@ -157,7 +154,6 @@ lazy val tests = projectMatrix
   .defaultAxes(defaults*)
   .jvmPlatform(Seq(Versions.Scala))
   .settings(
-    scalaVersion := Versions.Scala,
     libraryDependencies ++= Seq(
       // test dependencies
       "com.dimafeng" %% "testcontainers-scala-postgresql" % Versions.TestContainers % Test,
@@ -169,19 +165,21 @@ lazy val tests = projectMatrix
       "com.indoorvivants.playwright" %% "weaver" % Versions.Playwright % Test
     ),
     Compile / resourceGenerators += {
-      Def.task[Seq[File]] {
-        val location = frontendBundle.value
+      Def
+        .task[Seq[File]] {
+          val location = frontendBundle.value
 
-        println(location)
+          println(location)
 
-        val outDir = (Compile / resourceManaged).value/ "assets" / "main.js"
+          val outDir = (Compile / resourceManaged).value / "assets" / "main.js"
 
-        IO.copyFile(location, outDir)
+          IO.copyFile(location, outDir)
 
-        println(outDir)
+          println(outDir)
 
-        Seq(outDir)
-      }.taskValue
+          Seq(outDir)
+        }
+        .taskValue
     },
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     Test / fork             := true,
@@ -207,7 +205,7 @@ ThisBuild / frontendModules := (Def.taskIf {
 
 lazy val frontendBundle = taskKey[File]("")
 ThisBuild / frontendBundle := (Def.taskIf {
-  def proj = frontend.finder(BuildStyle.Modules)(
+  def proj = frontend.finder(BuildStyle.SingleFile)(
     Versions.Scala
   )
 
