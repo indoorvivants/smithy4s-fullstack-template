@@ -12,16 +12,42 @@ import hellosmithy4s.DoobieDatabase
 import hellosmithy4s.Routes
 
 import com.comcast.ip4s.*
+import org.http4s.server
 
-def buildApp: Resource[cats.effect.IO, Probe] =
+import cats.syntax.all.*
+import scribe.Logger
+import scribe.Level
+
+def buildApp: Resource[IO, (Probe, server.Server)] =
   for
+    _  <- silenceOfTheLogs
     db <- doobieDatabase
     logger = scribe.cats.io
     probe  <- Probe.build(logger, db)
     routes <- Routes.build(probe.api)
-    httpConfig = HttpConfig(host"localhost", port"9911", Deployment.Local)
+    httpConfig = HttpConfig(host"localhost", port"0", Deployment.Local)
     server <- Server(httpConfig, routes)
-  yield probe
+  yield probe -> server
+
+def silenceOfTheLogs =
+  val loggers =
+    Seq(
+      "org.http4s",
+      "org.flywaydb.core",
+      "org.testcontainers",
+      "🐳 [postgres:14]",
+      "🐳 [testcontainers/ryuk:0.3.3]"
+    )
+
+  val silence = loggers.traverse_ { log =>
+    IO(Logger(log).withMinimumLevel(Level.Error).replace())
+  }
+  val shout = loggers.traverse_ { log =>
+    IO(Logger(log).withMinimumLevel(Level.Info).replace())
+  }
+
+  Resource.make(silence)(_ => shout)
+end silenceOfTheLogs
 
 def doobieDatabase =
   postgresContainer

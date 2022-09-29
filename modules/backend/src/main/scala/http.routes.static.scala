@@ -6,7 +6,9 @@ import org.http4s.dsl.io.*
 import java.nio.file.Paths
 
 object Static:
-  def routes: Resource[IO, HttpRoutes[IO]] =
+  val cls = getClass.getClassLoader()
+
+  val routes: Resource[IO, HttpRoutes[IO]] =
     val indexHtml = StaticFile
       .fromResource[IO](
         "assets/index.html",
@@ -22,7 +24,8 @@ object Static:
           .fromResource[IO](
             Paths.get("assets", filename).toString,
             Some(req),
-            preferGzipped = true
+            preferGzipped = true,
+            classloader = Some(cls)
           )
           .getOrElseF(NotFound())
       case req @ GET -> Root        => indexHtml
