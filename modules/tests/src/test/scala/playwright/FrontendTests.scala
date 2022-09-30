@@ -36,6 +36,7 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
       }
 
   override def getPlaywright(res: Res): PlaywrightRuntime = res.pw
+
   override def retryPolicy: PlaywrightRetry =
     PlaywrightRetry.linear(10, 500.millis) // 5 seconds max
 
