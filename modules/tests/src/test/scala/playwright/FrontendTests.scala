@@ -28,9 +28,9 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
 
   override def getPlaywright(res: Res): PlaywrightRuntime = res.pw
   override def retryPolicy: PlaywrightRetry =
-    PlaywrightRetry.linear(20, 250.millis) // 5 seconds max
+    PlaywrightRetry.linear(10, 500.millis) // 5 seconds max
 
-  def configure(pc: PageContext) = pc.page(_.setDefaultTimeout(3000))
+  def configure(pc: PageContext) = pc.page(_.setDefaultTimeout(10.seconds.toMillis))
 
   test("basics") { pb =>
     getPageContext(pb).evalTap(configure).use { pc =>
