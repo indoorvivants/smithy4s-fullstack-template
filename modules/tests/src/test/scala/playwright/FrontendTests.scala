@@ -23,7 +23,7 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
 
   val (poolSize, timeout) = 
     if sys.env.contains("CI") then 
-      1 -> 30.seconds 
+      2 -> 30.seconds 
     else 
       4 -> 5.seconds
 
