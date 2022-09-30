@@ -25,7 +25,7 @@ def buildApp: Resource[IO, (Probe, server.Server)] =
     logger = scribe.cats.io
     probe  <- Probe.build(logger, db)
     routes <- Routes.build(probe.api)
-    httpConfig = HttpConfig(host"localhost", port"0", Deployment.Local)
+    httpConfig = HttpConfig(host"0.0.0.0", port"0", Deployment.Local)
     server <- Server(httpConfig, routes)
   yield probe -> server
 
@@ -36,7 +36,8 @@ def silenceOfTheLogs =
       "org.flywaydb.core",
       "org.testcontainers",
       "🐳 [postgres:14]",
-      "🐳 [testcontainers/ryuk:0.3.3]"
+      "🐳 [testcontainers/ryuk:0.3.3]",
+      "com.zaxxer.hikari"
     )
 
   val silence = loggers.traverse_ { log =>

@@ -35,11 +35,11 @@ jobs:
       - name: Compile
         run: sbt --client 'compile; Test/compile;'
 
-      - name: Fast tests
-        run: sbt --client fastTests 
+      # - name: Fast tests
+      #   run: sbt --client fastTests 
           
-      - name: Integration tests 
-        run: sbt --client integrationTests
+      # - name: Integration tests 
+      #   run: sbt --client integrationTests
 
       - name: Frontend tests 
         run: sbt --client playwrightTests
