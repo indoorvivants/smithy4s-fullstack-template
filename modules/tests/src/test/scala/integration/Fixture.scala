@@ -18,9 +18,11 @@ import cats.syntax.all.*
 import scribe.Logger
 import scribe.Level
 
-def buildApp: Resource[IO, (Probe, server.Server)] =
+def buildApp(
+    silenceLogs: Boolean = true
+): Resource[IO, (Probe, server.Server)] =
   for
-    _  <- silenceOfTheLogs
+    _  <- if silenceLogs then silenceOfTheLogs else Resource.eval(IO.unit)
     db <- doobieDatabase
     logger = scribe.cats.io
     probe  <- Probe.build(logger, db)
@@ -36,7 +38,8 @@ def silenceOfTheLogs =
       "org.flywaydb.core",
       "org.testcontainers",
       "🐳 [postgres:14]",
-      "🐳 [testcontainers/ryuk:0.3.3]"
+      "🐳 [testcontainers/ryuk:0.3.3]",
+      "com.zaxxer.hikari"
     )
 
   val silence = loggers.traverse_ { log =>
