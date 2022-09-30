@@ -6,4 +6,4 @@ import cats.effect.kernel.Resource
 
 object HelloTests extends BaseSuite with HelloSuite:
   override def sharedResource: Resource[cats.effect.IO, Res] =
-    buildApp.map(_._1)
+    buildApp().map(_._1)
