@@ -23,7 +23,7 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
   override def sharedResource =
     integration
       .buildApp(silenceLogs = !sys.env.get("INTEGRATION_LOGS").contains("true"))
-      .parProduct(PlaywrightRuntime.create())
+      .parProduct(PlaywrightRuntime.create(poolSize = 2))
       .map { case ((probe, server), pw) =>
         Resources(probe, server.baseUri, pw)
       }
