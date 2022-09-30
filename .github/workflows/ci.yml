@@ -8,6 +8,7 @@ on:
 
 env:
   RELEASE: yesh
+  INTEGRATION_LOGS: true
 
 jobs:
   build:
