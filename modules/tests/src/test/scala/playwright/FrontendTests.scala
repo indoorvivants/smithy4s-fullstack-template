@@ -20,10 +20,17 @@ case class Resources(
 
 object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
   override type Res = Resources
+
+  val (poolSize, timeout) = 
+    if sys.env.contains("CI") then 
+      1 -> 30.seconds 
+    else 
+      4 -> 5.seconds
+
   override def sharedResource =
     integration
       .buildApp(silenceLogs = !sys.env.get("INTEGRATION_LOGS").contains("true"))
-      .parProduct(PlaywrightRuntime.create(poolSize = 2))
+      .parProduct(PlaywrightRuntime.create(poolSize = poolSize))
       .map { case ((probe, server), pw) =>
         Resources(probe, server.baseUri, pw)
       }
@@ -33,7 +40,7 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
     PlaywrightRetry.linear(10, 500.millis) // 5 seconds max
 
   def configure(pc: PageContext) =
-    pc.page(_.setDefaultTimeout(10.seconds.toMillis))
+    pc.page(_.setDefaultTimeout(timeout.toMillis))
 
   test("basics") { pb =>
     getPageContext(pb).evalTap(configure).use { pc =>

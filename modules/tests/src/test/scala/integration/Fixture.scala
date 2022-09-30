@@ -27,7 +27,7 @@ def buildApp(
     logger = scribe.cats.io
     probe  <- Probe.build(logger, db)
     routes <- Routes.build(probe.api)
-    httpConfig = HttpConfig(host"0.0.0.0", port"0", Deployment.Local)
+    httpConfig = HttpConfig(host"localhost", port"0", Deployment.Local)
     server <- Server(httpConfig, routes)
   yield probe -> server
 
