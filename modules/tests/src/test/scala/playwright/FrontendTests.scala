@@ -21,11 +21,9 @@ case class Resources(
 object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
   override type Res = Resources
 
-  val (poolSize, timeout) = 
-    if sys.env.contains("CI") then 
-      1 -> 30.seconds 
-    else 
-      4 -> 5.seconds
+  val (poolSize, timeout) =
+    if sys.env.contains("CI") then 1 -> 30.seconds
+    else 4                           -> 5.seconds
 
   override def sharedResource =
     integration
