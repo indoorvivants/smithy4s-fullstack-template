@@ -6,7 +6,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val Versions = new {
   val http4s         = "0.23.16"
-  val Scala          = "3.2.0"
+  val Scala          = "3.2.1"
   val scribe         = "3.10.4"
   val http4sDom      = "0.2.3"
   val Flyway         = "9.7.0"
