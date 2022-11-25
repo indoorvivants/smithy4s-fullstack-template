@@ -6,18 +6,31 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val Versions = new {
   val http4s         = "0.23.16"
+
   val Scala          = "3.2.1"
-  val scribe         = "3.10.4"
+
+  val scribe         = "3.10.5"
+
   val http4sDom      = "0.2.3"
+
   val Flyway         = "9.8.3"
+
   val Postgres       = "42.5.1"
+
   val TestContainers = "0.40.9"
-  val Weaver         = "0.8.0"
-  val Playwright     = "0.0.4"
+
+  val Weaver         = "0.8.1"
+
+  val Playwright     = "0.0.5"
+
   val Laminar        = "0.14.5"
+
   val waypoint       = "0.5.0"
+
   val scalacss       = "1.0.0"
+
   val circe          = "0.14.3"
+
   val doobie         = "1.0.0-RC2"
 }
 
