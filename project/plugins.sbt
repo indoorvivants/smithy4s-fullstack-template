@@ -9,7 +9,7 @@ addSbtPlugin("org.scala-js"        % "sbt-scalajs"            % "1.12.0")
 addSbtPlugin("org.jmotor.sbt"      % "sbt-dependency-updates" % "1.2.7")
 addSbtPlugin("org.scalameta"       % "sbt-scalafmt"           % "2.5.0")
 addSbtPlugin("com.dwijnand"        % "sbt-dynver"             % "4.1.1")
-addSbtPlugin("com.github.reibitto" % "sbt-welcome"            % "0.2.2")
+addSbtPlugin("com.github.reibitto" % "sbt-welcome"            % "0.3.1")
 
 ThisBuild / libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
