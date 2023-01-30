@@ -13,7 +13,7 @@ val Versions = new {
 
   val http4sDom = "0.2.6"
 
-  val Flyway = "9.11.0"
+  val Flyway = "9.12.0"
 
   val Postgres = "42.5.1"
 
