@@ -9,7 +9,7 @@ val Versions = new {
 
   val Scala = "3.2.2"
 
-  val scribe = "3.10.7"
+  val scribe = "3.11.0"
 
   val http4sDom = "0.2.6"
 
