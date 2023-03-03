@@ -29,7 +29,7 @@ val Versions = new {
 
   val scalacss = "1.0.0"
 
-  val circe = "0.14.4"
+  val circe = "0.14.5"
 
   val doobie = "1.0.0-RC2"
 }
