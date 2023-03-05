@@ -23,15 +23,18 @@ val Versions = new {
 
   val Playwright = "0.0.5"
 
-  val Laminar = "0.14.5"
+  val Laminar = "15.0.0-M7"
 
-  val waypoint = "0.5.0"
+  val waypoint = "6.0.0-M5"
 
   val scalacss = "1.0.0"
 
   val circe = "0.14.5"
 
   val doobie = "1.0.0-RC2"
+
+  val macroTaskExecutor = "1.1.1"
+
 }
 
 val Config = new {
@@ -158,7 +161,8 @@ lazy val frontend = projectMatrix
       "com.raquo"                    %%% "laminar"      % Versions.Laminar,
       "io.circe"                     %%% "circe-core"   % Versions.circe,
       "io.circe"                     %%% "circe-parser" % Versions.circe,
-      "org.http4s"                   %%% "http4s-dom"   % Versions.http4sDom
+      "org.http4s"                   %%% "http4s-dom"   % Versions.http4sDom,
+      "org.scala-js" %%% "scala-js-macrotask-executor" % Versions.macroTaskExecutor
     )
   )
 

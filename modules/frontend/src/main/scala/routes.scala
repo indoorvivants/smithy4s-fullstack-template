@@ -46,7 +46,7 @@ object Page:
     deserializePage = str =>
       io.circe.scalajs.decodeJs[Page](JSON.parse(str)).fold(throw _, identity)
   )(
-    $popStateEvent = L.windowEvents.onPopState,
+    popStateEvents = windowEvents(_.onPopState),
     owner = L.unsafeWindowOwner
   )
 end Page
