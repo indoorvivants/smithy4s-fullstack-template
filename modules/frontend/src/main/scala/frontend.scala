@@ -22,25 +22,27 @@ enum Event:
     child <-- renderPage
   )
 
-  documentEvents.onDomContentLoaded.foreach { _ =>
-    import scalacss.ProdDefaults.*
+  renderOnDomContentLoaded(
+    dom.document.getElementById("appContainer"), {
+      import scalacss.ProdDefaults.*
 
-    val sty = styleTag(Styles.render[String], `type` := "text/css")
-    dom.document.querySelector("head").appendChild(sty.ref)
+      val sty = styleTag(Styles.render[String], `type` := "text/css")
+      dom.document.querySelector("head").appendChild(sty.ref)
 
-    val sty1 = styleTag(GlobalStyles.render[String], `type` := "text/css")
-    dom.document.querySelector("head").appendChild(sty1.ref)
+      val sty1 = styleTag(GlobalStyles.render[String], `type` := "text/css")
+      dom.document.querySelector("head").appendChild(sty1.ref)
+      app
+    }
+  )
 
-    render(dom.document.getElementById("appContainer"), app)
-  }(unsafeWindowOwner)
 end frontend
 
 def renderPage(using
     router: Router[Page]
 )(using Api, EventBus[Event]): Signal[HtmlElement] =
-  SplitRender[Page, HtmlElement](router.$currentPage)
+  SplitRender[Page, HtmlElement](router.currentPageSignal)
     .collectStatic(Page.Index)(indexPage)
-    .$view
+    .signal
 
 def indexPage(using
     Router[Page]

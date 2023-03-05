@@ -15,6 +15,7 @@ case class Api(
     hello: HelloService[IO]
 ):
   import com.raquo.airstream.core.EventStream as LaminarStream
+  import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
   def future[A](a: Api => IO[A]): Future[A] =
     a(this).unsafeToFuture()
 
