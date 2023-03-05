@@ -31,7 +31,9 @@ object Api:
 
     val hello =
       SimpleRestJsonBuilder(HelloService)
-        .client(client, uri)
+        .client(client)
+        .uri(uri)
+        .use
         .fold(throw _, identity)
 
     Api(hello)
