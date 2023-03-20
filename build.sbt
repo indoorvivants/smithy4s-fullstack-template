@@ -23,7 +23,7 @@ val Versions = new {
 
   val Playwright = "0.0.5"
 
-  val Laminar = "15.0.0-M7"
+  val Laminar = "15.0.0"
 
   val waypoint = "6.0.0-M5"
 
