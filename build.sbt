@@ -5,7 +5,7 @@ import smithy4s.codegen.Smithy4sCodegenPlugin
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val Versions = new {
-  val http4s = "0.23.19"
+  val http4s = "0.23.21"
 
   val Scala = "3.2.2"
 
