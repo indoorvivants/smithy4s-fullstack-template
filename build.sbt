@@ -31,7 +31,7 @@ val Versions = new {
 
   val circe = "0.14.5"
 
-  val doobie = "1.0.0-RC2"
+  val doobie = "1.0.0-RC3"
 
   val macroTaskExecutor = "1.1.1"
 
