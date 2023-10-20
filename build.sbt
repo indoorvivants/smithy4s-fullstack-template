@@ -5,17 +5,17 @@ import smithy4s.codegen.Smithy4sCodegenPlugin
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val Versions = new {
-  val http4s = "0.23.19"
+  val http4s = "0.23.23"
 
-  val Scala = "3.2.2"
+  val Scala = "3.3.1"
 
-  val scribe = "3.11.5"
+  val scribe = "3.12.2"
 
-  val http4sDom = "0.2.7"
+  val http4sDom = "0.2.10"
 
-  val Flyway = "9.15.2"
+  val Flyway = "9.22.3"
 
-  val Postgres = "42.5.4"
+  val Postgres = "42.6.0"
 
   val TestContainers = "0.40.9"
 
@@ -23,15 +23,15 @@ val Versions = new {
 
   val Playwright = "0.0.5"
 
-  val Laminar = "15.0.0-M7"
+  val Laminar = "16.0.0"
 
-  val waypoint = "6.0.0-M5"
+  val waypoint = "7.0.0"
 
   val scalacss = "1.0.0"
 
-  val circe = "0.14.5"
+  val circe = "0.14.6"
 
-  val doobie = "1.0.0-RC2"
+  val skunk = "0.6.0"
 
   val macroTaskExecutor = "1.1.1"
 
@@ -106,9 +106,7 @@ lazy val backend = projectMatrix
       "com.outr"     %% "scribe"          % Versions.scribe,
       "com.outr"     %% "scribe-cats"     % Versions.scribe,
       "com.outr"     %% "scribe-slf4j"    % Versions.scribe,
-      "org.tpolecat" %% "doobie-core"     % Versions.doobie,
-      "org.tpolecat" %% "doobie-postgres" % Versions.doobie,
-      "org.tpolecat" %% "doobie-hikari"   % Versions.doobie
+
     ),
     Compile / doc / sources := Seq.empty
   )
@@ -295,11 +293,11 @@ import sbtwelcome.*
 
 logo :=
   s"""
-     | ##### ###### #    # #####  #        ##   ##### ###### 
-     |   #   #      ##  ## #    # #       #  #    #   #      
-     |   #   #####  # ## # #    # #      #    #   #   #####  
-     |   #   #      #    # #####  #      ######   #   #      
-     |   #   #      #    # #      #      #    #   #   #      
+     | ##### ###### #    # #####  #        ##   ##### ######
+     |   #   #      ##  ## #    # #       #  #    #   #
+     |   #   #####  # ## # #    # #      #    #   #   #####
+     |   #   #      #    # #####  #      ######   #   #
+     |   #   #      #    # #      #      #    #   #   #
      |   #   ###### #    # #      ###### #    #   #   ######
      |
      |Version: ${version.value}
