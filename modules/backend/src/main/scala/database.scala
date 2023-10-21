@@ -4,6 +4,8 @@ import cats.effect.*
 import hellosmithy4s.spec.*
 import skunk.*
 import fs2.Stream
+import skunk.data.Completion
+import skunk.net.message.CommandComplete
 
 trait Database:
   def getKey(key: Key): IO[Option[Value]]
@@ -37,9 +39,12 @@ object Database:
       }
 
       override def delete(key: Key): IO[Int] = pool.use{
-        s => s.prepare(operations.delete).flatMap(
-          _.unique(key)
-        )
+        s => s.prepare(operations.delete).flatMap{ps =>
+            ps.execute(key).map{
+              case Completion.Delete(n) => n
+              case _ => throw KeyNotFound()
+            }
+          }
       }
 
       override def getAll() = pool.use{
