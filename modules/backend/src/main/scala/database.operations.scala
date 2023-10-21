@@ -47,9 +47,9 @@ object operations:
 
   val delete: Query[Key, Int] = sql"delete from examples where key = ${codecs.userId} returning key".query(int4)
 
-  val incrementValue: Query[Key, Pair] = sql"update examples set value = value + 1 where key = ${codecs.userId}".query(codecs.userId ~ codecs.value).map(Pair.apply)
+  val incrementValue: Query[Key, Pair] = sql"update examples set value = value + 1 where key = ${codecs.userId} returning key, value".query(codecs.userId ~ codecs.value).map(Pair.apply)
 
-  val decrementValue: Query[Key, Pair] = sql"update examples set value = value - 1 where key = ${codecs.userId}".query(codecs.userId ~ codecs.value).map(Pair.apply)
+  val decrementValue: Query[Key, Pair] = sql"update examples set value = value - 1 where key = ${codecs.userId} returning key, value".query(codecs.userId ~ codecs.value).map(Pair.apply)
 
   // case class Get(key: Key)
   //     extends SqlQuery(
