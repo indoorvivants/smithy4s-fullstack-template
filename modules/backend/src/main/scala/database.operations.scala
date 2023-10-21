@@ -51,49 +51,4 @@ object operations:
 
   val decrementValue: Query[Key, Pair] = sql"update examples set value = value - 1 where key = ${codecs.userId} returning key, value".query(codecs.userId ~ codecs.value).map(Pair.apply)
 
-  // case class Get(key: Key)
-  //     extends SqlQuery(
-  //       key,
-  //       sql"select value from examples where key = $key"
-  //         .query[Int]
-  //         .map(Value.apply)
-  //     )
-
-  // case object GetAll
-  //     extends SqlQuery(
-  //       (),
-  //       sql"select key, value from examples order by key"
-  //         .query[(Key, Value)]
-  //         .map(Pair.apply)
-  //     )
-
-  // case class Create(key: Key, value: Option[Value])
-  //     extends SqlUpdate(
-  //       key,
-  //       sql"insert into examples (key, value) values ($key, ${value.map(_.value).getOrElse(0)})".update
-  //     )
-
-  // case class Delete(key: Key)
-  //     extends SqlUpdate(
-  //       key,
-  //       sql"delete from examples where key = $key".update
-  //     )
-
-  // case class Inc(key: Key)
-  //     extends SqlUpdate(
-  //       key,
-  //       sql"update examples set value = value + 1 where key = $key".update
-  //     )
-
-  // case class Dec(key: Key)
-  //     extends SqlUpdate(
-  //       key,
-  //       sql"update examples set value = value - 1 where key = $key".update
-  //     )
-
-  // case class Update(key: Key, value: Value)
-  //     extends SqlUpdate(
-  //       key,
-  //       sql"update examples set value = ${value.value} where key = $key".update
-  //     )
 end operations
