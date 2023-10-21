@@ -16,7 +16,7 @@ class HelloImplementation(logger: Scribe[IO], db: Database)
     }
 
   override def dec(key: Key): IO[Unit] =
-    db.dec(key).void
+    orNotFound(db.dec(key).map(_.map(_ => 1))).void
     // (
     //   err =>
     //     logger.error(err) *>
@@ -25,7 +25,7 @@ class HelloImplementation(logger: Scribe[IO], db: Database)
     // )
 
   override def inc(key: Key): IO[Unit] =
-    db.inc(key).void
+    orNotFound(db.inc(key).map(_.map(_ => 1))).void
     // .redeem(
     //   err =>
     //     IO.println("Inc error") *>

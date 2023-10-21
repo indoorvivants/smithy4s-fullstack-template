@@ -12,8 +12,8 @@ trait Database:
   def create(key: Key, value: Option[Value]): IO[Unit]
   def getAll(): IO[Stream[IO, Pair]]
   def delete(key: Key): IO[Int]
-  def inc(key: Key): IO[Pair]
-  def dec(key: Key): IO[Pair]
+  def inc(key: Key): IO[Option[Pair]]
+  def dec(key: Key): IO[Option[Pair]]
   def update(key: Key, value: Value): IO[Pair]
 
 object Database:
@@ -26,15 +26,15 @@ object Database:
         )
       }
 
-      override def dec(key: Key): IO[Pair] = pool.use{
+      override def dec(key: Key): IO[Option[Pair]] = pool.use{
         s => s.prepare(operations.decrementValue).flatMap(
-          _.unique(key)
+          _.option(key)
         )
       }
 
-      override def inc(key: Key): IO[Pair] = pool.use{
+      override def inc(key: Key): IO[Option[Pair]] = pool.use{
         s => s.prepare(operations.incrementValue).flatMap(
-          _.unique(key)
+          _.option(key)
         )
       }
 
