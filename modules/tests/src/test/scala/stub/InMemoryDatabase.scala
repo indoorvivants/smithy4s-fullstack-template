@@ -10,10 +10,10 @@ import fs2.Stream
 
 class InMemoryDatabase private (rf: Ref[IO, Map[Key, Value]]) extends Database:
 
-  override def update(key: Key, value: Value): IO[Pair] = rf.modify { mp =>
+  override def update(key: Key, value: Value): IO[Option[Pair]] = rf.modify { mp =>
     if mp.contains(key) then
       val newMap = mp.updatedWith(key)(_.map(v => value))
-      (newMap, Pair(key, newMap(key)))
+      (newMap, Some(Pair(key, newMap(key))))
     else throw KeyNotFound()
   }
 

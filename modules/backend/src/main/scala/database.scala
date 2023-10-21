@@ -14,15 +14,15 @@ trait Database:
   def delete(key: Key): IO[Int]
   def inc(key: Key): IO[Option[Pair]]
   def dec(key: Key): IO[Option[Pair]]
-  def update(key: Key, value: Value): IO[Pair]
+  def update(key: Key, value: Value): IO[Option[Pair]]
 
 object Database:
 
   def fromSessionPool(pool: SkunkSessionPool): Database =
     new Database:
-      override def update(key: Key, value: Value): IO[Pair] = pool.use{s =>
+      override def update(key: Key, value: Value): IO[Option[Pair]] = pool.use{s =>
         s.prepare(operations.update).flatMap(
-          _.unique(Pair(key, value))
+          _.option(Pair(key, value))
         )
       }
 
