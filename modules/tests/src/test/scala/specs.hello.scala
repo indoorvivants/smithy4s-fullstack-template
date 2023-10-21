@@ -3,6 +3,7 @@ package tests
 
 import weaver.*
 import spec.*
+import cats.effect.IO
 
 trait HelloSuite:
   self: BaseSuite =>
