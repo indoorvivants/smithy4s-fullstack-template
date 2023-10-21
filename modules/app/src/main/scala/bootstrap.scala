@@ -45,11 +45,13 @@ def bootstrap(
 
     pgCredentials = cloudDb.getOrElse(PgCredentials.from(env))
 
-    db <- DoobieDatabase.hikari(pgCredentials)
+    pool <- SkunkDatabase.sessionPool(
+      pgCredentials
+    )
 
     services = Services.build(
       logger,
-      db
+      Database.fromSessionPool(pool)
     )
 
     routes <- Routes.build(

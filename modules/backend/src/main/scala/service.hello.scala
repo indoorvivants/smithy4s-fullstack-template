@@ -6,43 +6,74 @@ import cats.syntax.all.*
 
 import hellosmithy4s.spec.*
 
-class HelloImplementation(logger: Scribe[IO], database: Database)
+class HelloImplementation(logger: Scribe[IO], db: Database)
     extends HelloService[IO]:
+
   override def get(key: Key): IO[GetOutput] =
-    database.option(operations.Get(key)).flatMap {
+    db.getKey(key).flatMap {
       case Some(value) => GetOutput(value).pure[IO]
       case None        => IO.raiseError(KeyNotFound())
     }
 
   override def dec(key: Key): IO[Unit] =
-    orNotFound(database.option(operations.Dec(key))).void
+    db.dec(key).void
+    // (
+    //   err =>
+    //     logger.error(err) *>
+    //     IO.raiseError(KeyNotFound()),
+    //   _ => IO.unit
+    // )
 
   override def inc(key: Key): IO[Unit] =
-    orNotFound(database.option(operations.Inc(key))).void
+    db.inc(key).void
+    // .redeem(
+    //   err =>
+    //     IO.println("Inc error") *>
+    //     logger.error(err) *>
+    //     IO.raiseError(KeyNotFound()),
+    //   _ =>
+    //     IO.println(s"Incremented $key")
+    // )
 
-  override def update(key: Key, value: Value): IO[Unit] =
-    orNotFound(database.option(operations.Update(key, value))).void
+    ///orNotFound(??? /*database.option(operations.Inc(key)) */).void
+
+  override def update(key: Key, value: Value): IO[Unit] = db.update(key, value).void
+  // .redeem(
+  //   err =>
+  //     logger.error(err) *>
+  //     IO.raiseError(KeyNotFound()),
+  //   _ => IO.unit
+  // )
+    ///orNotFound(database.option( ??? /*operations.Update(key, value) */)).void
 
   override def create(key: Key, value: Option[Value]): IO[Unit] =
-    database
-      .option(operations.Create(key, value))
-      .attempt
-      .flatMap {
-        case Left(err) =>
-          logger.error(
-            s"Failed to insert key ${key.value}",
-            err
-          ) *> IO.raiseError(KeyAlreadyExists())
-        case _ => logger.info(s"Key ${key.value} was added")
-      }
+    db.create(key, value).attempt.flatMap{
+      case Left(err) =>
+        logger.error(
+          s"Failed to insert key ${key.value}",
+          err
+        ) *> IO.raiseError(KeyAlreadyExists())
+      case _ => logger.info(s"Key ${key.value} was added")
+    }
+    // database
+    //   .option( ??? // operations.Create(key, value)
+    //   )
+    //   .attempt
+    //   .flatMap {
+    //     case Left(err) =>
+    //       logger.error(
+    //         s"Failed to insert key ${key.value}",
+    //         err
+    //       ) *> IO.raiseError(KeyAlreadyExists())
+    //     case _ => logger.info(s"Key ${key.value} was added")
+    //   }
 
-  override def delete(key: Key): IO[Unit] =
-    orNotFound(database.option(operations.Delete(key))).void
+  override def delete(key: Key): IO[Unit] = orNotFound(db.delete(key).map(_.some)).void
 
   override def getAll(): IO[GetAllOutput] =
-    database.vector(operations.GetAll).map { v =>
-      GetAllOutput(v.toList)
-    }
+    db.getAll().flatMap(str =>
+      str.compile.toList.map(GetAllOutput(_))
+    )
 
   private def orNotFound(result: IO[Option[Int]]) =
     result.flatMap {

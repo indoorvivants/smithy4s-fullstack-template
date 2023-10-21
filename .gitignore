@@ -16,5 +16,8 @@ frontend-build/node_modules
 node_modules
 .idea
 postgres-data
+.smithy.lsp.log
+
+.vscode/settings.json
 
 .env
