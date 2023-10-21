@@ -40,7 +40,7 @@ object operations:
 
   val create: Command[(Key, Value)] = sql"insert into examples (key, value) values (${codecs.userId}, ${codecs.value})".command
 
-  val update: Query[Pair, Pair] = sql"update examples set value = ${codecs.value} where key = ${codecs.userId} RETURNING *"
+  val update: Query[Pair, Pair] = sql"update examples set value = ${codecs.value} where key = ${codecs.userId} RETURNING value, key"
     .query(codecs.value ~ codecs.userId)
     .contramap[Pair](p => p.value ~ p.key)
     .map{case(v ~ k) => Pair(k, v)}
