@@ -17,31 +17,16 @@ class HelloImplementation(logger: Scribe[IO], db: Database)
 
   override def dec(key: Key): IO[Unit] =
     orNotFound(db.dec(key).map(_.map(_ => 1))).void
-    // (
-    //   err =>
-    //     logger.error(err) *>
-    //     IO.raiseError(KeyNotFound()),
-    //   _ => IO.unit
-    // )
 
   override def inc(key: Key): IO[Unit] =
     orNotFound(db.inc(key).map(_.map(_ => 1))).void
-    // .redeem(
-    //   err =>
-    //     IO.println("Inc error") *>
-    //     logger.error(err) *>
-    //     IO.raiseError(KeyNotFound()),
-    //   _ =>
-    //     IO.println(s"Incremented $key")
-    // )
 
-    ///orNotFound(??? /*database.option(operations.Inc(key)) */).void
-
-  override def update(key: Key, value: Value): IO[Unit] = orNotFound(db.update(key, value).map(opt => opt.map(_ => 1))).void
-    // orNotFound(database.option( ??? /*operations.Update(key, value) */)).void
+  override def update(key: Key, value: Value): IO[Unit] = orNotFound(
+    db.update(key, value).map(opt => opt.map(_ => 1))
+  ).void
 
   override def create(key: Key, value: Option[Value]): IO[Unit] =
-    db.create(key, value).attempt.flatMap{
+    db.create(key, value).attempt.flatMap {
       case Left(err) =>
         logger.error(
           s"Failed to insert key ${key.value}",
@@ -49,25 +34,13 @@ class HelloImplementation(logger: Scribe[IO], db: Database)
         ) *> IO.raiseError(KeyAlreadyExists())
       case _ => logger.info(s"Key ${key.value} was added")
     }
-    // database
-    //   .option( ??? // operations.Create(key, value)
-    //   )
-    //   .attempt
-    //   .flatMap {
-    //     case Left(err) =>
-    //       logger.error(
-    //         s"Failed to insert key ${key.value}",
-    //         err
-    //       ) *> IO.raiseError(KeyAlreadyExists())
-    //     case _ => logger.info(s"Key ${key.value} was added")
-    //   }
 
-  override def delete(key: Key): IO[Unit] = orNotFound(db.delete(key).map(_.some)).void
+  override def delete(key: Key): IO[Unit] = orNotFound(
+    db.delete(key).map(_.some)
+  ).void
 
   override def getAll(): IO[GetAllOutput] =
-    db.getAll().flatMap(str =>
-      str.compile.toList.map(GetAllOutput(_))
-    )
+    db.getAll().flatMap(str => str.compile.toList.map(GetAllOutput(_)))
 
   private def orNotFound(result: IO[Option[Int]]) =
     result.flatMap {
