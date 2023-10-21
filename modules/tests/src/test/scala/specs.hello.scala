@@ -101,7 +101,6 @@ trait HelloSuite:
       _          <- expect(getMissing == Left(KeyNotFound())).failFast
 
       incMissing <- inc(key).attempt
-      _ <- IO.println(incMissing)
       _          <- expect(incMissing == Left(KeyNotFound())).failFast
 
       decMissing <- dec(key).attempt

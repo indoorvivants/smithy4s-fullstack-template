@@ -26,11 +26,9 @@ class InMemoryDatabase private (rf: Ref[IO, Map[Key, Value]]) extends Database:
 
   override def inc(key: Key): IO[Pair] = rf.modify[Pair] { mp =>
     if mp.contains(key) then
-      println("here")
       val newMap = mp.updatedWith(key)(_.map(v => Value(v.value + 1)))
       (newMap, Pair(key, newMap(key)))
     else
-      println("Throwing error")
       throw KeyNotFound()
   }
 
