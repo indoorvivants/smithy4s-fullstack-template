@@ -37,7 +37,7 @@ class HelloImplementation(logger: Scribe[IO], db: Database)
 
     ///orNotFound(??? /*database.option(operations.Inc(key)) */).void
 
-  override def update(key: Key, value: Value): IO[Unit] = orNotFound(db.update(key, value).map(_=>Some(1))).void
+  override def update(key: Key, value: Value): IO[Unit] = orNotFound(db.update(key, value).map(opt => opt.map(_ => 1))).void
     // orNotFound(database.option( ??? /*operations.Update(key, value) */)).void
 
   override def create(key: Key, value: Option[Value]): IO[Unit] =
