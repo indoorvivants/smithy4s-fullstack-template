@@ -45,7 +45,7 @@ object operations:
     .contramap[Pair](p => p.value ~ p.key)
     .map{case(v ~ k) => Pair(k, v)}
 
-  val delete: Query[Key, Int] = sql"delete from examples where key = ${codecs.userId} returning key".query(int4)
+  val delete: Query[Key, Int] = sql"delete from examples where key = ${codecs.userId}".query(int4)
 
   val incrementValue: Query[Key, Pair] = sql"update examples set value = value + 1 where key = ${codecs.userId} returning key, value".query(codecs.userId ~ codecs.value).map(Pair.apply)
 
