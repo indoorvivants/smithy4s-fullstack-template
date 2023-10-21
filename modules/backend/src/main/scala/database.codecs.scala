@@ -10,7 +10,7 @@ object codecs:
     def as(obj: Newtype[T]): Codec[obj.Type] =
       c.imap(obj.apply(_))(_.value)
 
-  val userId: Codec[Key]       = text.as(Key)
+  val userId: Codec[Key]       = varchar(50).as(Key)
   val value: Codec[Value]       = int4.as(Value)
 
 
