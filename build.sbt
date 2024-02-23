@@ -25,7 +25,7 @@ val Versions = new {
 
   val Laminar = "15.0.0-M7"
 
-  val waypoint = "6.0.0-M5"
+  val waypoint = "6.0.0"
 
   val scalacss = "1.0.0"
 
