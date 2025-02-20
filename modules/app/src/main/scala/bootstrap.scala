@@ -1,5 +1,6 @@
 package hellosmithy4s
 
+import natchez.Trace
 import cats.effect.*
 import cats.syntax.all.*
 import org.http4s.server.Server
@@ -8,7 +9,7 @@ import java.io.File
 def bootstrap(
     arguments: List[String],
     systemEnv: Map[String, String]
-): Resource[IO, Server] =
+)(using trace: Trace[IO]): Resource[IO, Server] =
   val logger = scribe.cats.io
   val cliConfig =
     CLIConfig(None, Option(new File(".env")), Deployment.Local, Cloud.Flyio)
@@ -45,7 +46,7 @@ def bootstrap(
 
     pgCredentials = cloudDb.getOrElse(PgCredentials.from(env))
 
-    db <- DoobieDatabase.hikari(pgCredentials)
+    db <- SkunkDatabase.make(pgCredentials)
 
     services = Services.build(
       logger,

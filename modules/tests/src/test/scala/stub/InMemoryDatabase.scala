@@ -20,7 +20,7 @@ class InMemoryDatabase private (rf: Ref[IO, Map[Key, Value]]) extends Database:
         fs2.Stream
           .eval(rf.modify { mp =>
             if mp.contains(key) then mp -> IO.raiseError(KeyAlreadyExists())
-            else mp.updated(key, value.getOrElse(Value(0))) -> IO.pure(1)
+            else mp.updated(key, value) -> IO.pure(1)
           })
           .evalMap(identity)
       case Delete(key) =>

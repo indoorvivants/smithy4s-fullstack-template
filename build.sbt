@@ -31,7 +31,7 @@ val Versions = new {
 
   val circe = "0.14.5"
 
-  val doobie = "1.0.0-RC2"
+  val skunk = "0.6.4"
 
   val macroTaskExecutor = "1.1.1"
 
@@ -106,9 +106,7 @@ lazy val backend = projectMatrix
       "com.outr"     %% "scribe"          % Versions.scribe,
       "com.outr"     %% "scribe-cats"     % Versions.scribe,
       "com.outr"     %% "scribe-slf4j"    % Versions.scribe,
-      "org.tpolecat" %% "doobie-core"     % Versions.doobie,
-      "org.tpolecat" %% "doobie-postgres" % Versions.doobie,
-      "org.tpolecat" %% "doobie-hikari"   % Versions.doobie
+      "org.tpolecat" %% "skunk-core"      % Versions.skunk, 
     ),
     Compile / doc / sources := Seq.empty
   )

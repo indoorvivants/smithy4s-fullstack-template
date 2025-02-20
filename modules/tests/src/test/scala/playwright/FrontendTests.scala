@@ -4,6 +4,7 @@ package playwright
 
 import com.indoorvivants.weaver.playwright.*
 
+import natchez.Trace.Implicits.noop
 import cats.syntax.all.*
 import cats.effect.IO
 import org.http4s.Uri

@@ -25,7 +25,7 @@ class HelloImplementation(logger: Scribe[IO], database: Database)
 
   override def create(key: Key, value: Option[Value]): IO[Unit] =
     database
-      .option(operations.Create(key, value))
+      .option(operations.Create(key, value.getOrElse(Value(0))))
       .attempt
       .flatMap {
         case Left(err) =>
