@@ -25,7 +25,9 @@ jobs:
           distribution: 'temurin' 
           java-version: '17'
           cache: 'sbt'
-
+          
+      - uses: sbt/setup-sbt@v1
+      
       - name: Cache Playwright
         id: cache-primes
         uses: actions/cache@v3
