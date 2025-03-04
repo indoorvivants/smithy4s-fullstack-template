@@ -8,7 +8,7 @@ import org.testcontainers.utility.DockerImageName
 import cats.effect.kernel.Resource
 import org.flywaydb.core.Flyway
 import hellosmithy4s.PgCredentials
-import hellosmithy4s.DoobieDatabase
+import hellosmithy4s.SkunkDatabase
 import hellosmithy4s.Routes
 
 import com.comcast.ip4s.*
@@ -17,13 +17,14 @@ import org.http4s.server
 import cats.syntax.all.*
 import scribe.Logger
 import scribe.Level
+import natchez.Trace
 
 def buildApp(
     silenceLogs: Boolean = true
-): Resource[IO, (Probe, server.Server)] =
+)(using trace: Trace[IO]): Resource[IO, (Probe, server.Server)] =
   for
     _  <- if silenceLogs then silenceOfTheLogs else Resource.eval(IO.unit)
-    db <- doobieDatabase
+    db <- skunkDatabase
     logger = scribe.cats.io
     probe  <- Probe.build(logger, db)
     routes <- Routes.build(probe.api)
@@ -52,7 +53,7 @@ def silenceOfTheLogs =
   Resource.make(silence)(_ => shout)
 end silenceOfTheLogs
 
-def doobieDatabase =
+def skunkDatabase(using trace: Trace[IO]) =
   postgresContainer
     .evalMap(cont => parseJDBC(cont.jdbcUrl).map(cont -> _))
     .evalTap { case (cont, _) =>
@@ -67,7 +68,7 @@ def doobieDatabase =
         database = cont.databaseName
       )
 
-      DoobieDatabase.hikari(pgConfig)
+      SkunkDatabase.make(pgConfig)
     }
 
 private def migrate(url: String, user: String, password: String) =

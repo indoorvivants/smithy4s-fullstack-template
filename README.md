@@ -6,7 +6,7 @@ This is a full-stack Scala application (simple key-value management store), made
 2. [Smithy4s](https://disneystreaming.github.io/smithy4s/) and [Smithy](https://awslabs.github.io/smithy/2.0/index.html#) for the API and protocol 
    definition between backend and frontend (and in tests)
 3. [Scala.js](https://www.scala-js.org) and [Laminar](https://laminar.dev) for the [SPA](https://en.wikipedia.org/wiki/Single-page_application) frontend
-4. [PostgreSQL](https://www.postgresql.org) and [Doobie](https://tpolecat.github.io/doobie/) for database access 
+4. [PostgreSQL](https://www.postgresql.org) and [Skunk](https://github.com/typelevel/skunk) for database access 
 5. [Weaver-Test](https://disneystreaming.github.io/weaver-test/) for unit and integration testing
 6. [Playwright](https://playwright.dev/) tests for frontend testing, using the dedicated [Weaver integration](https://github.com/indoorvivants/weaver-playwright)
 
@@ -51,7 +51,7 @@ After that, just do `sbt app/reStart` and go to http://localhost:9000
 ## Features
 
 - Database 
-  - uses Doobie for database access and [Flyway](https://flywaydb.org) to apply migrations
+  - uses Skunk for database access and [Flyway](https://flywaydb.org) to apply migrations
 
 - Deployment
   - uses [sbt-native-packager](https://sbt-native-packager.readthedocs.io/en/latest/) 
