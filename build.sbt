@@ -11,7 +11,7 @@ val Versions = new {
 
   val scribe = "3.11.5"
 
-  val http4sDom = "0.2.7"
+  val http4sDom = "0.2.12"
 
   val Flyway = "9.15.2"
 
