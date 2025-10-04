@@ -15,7 +15,7 @@ val Versions = new {
 
   val Flyway = "9.15.2"
 
-  val Postgres = "42.7.4"
+  val Postgres = "42.7.8"
 
   val TestContainers = "0.40.9"
 
