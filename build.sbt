@@ -9,7 +9,7 @@ val Versions = new {
 
   val Scala = "3.7.3"
 
-  val scribe = "3.15.3"
+  val scribe = "3.17.0"
 
   val smithy4sFetch = "0.0.4"
 
