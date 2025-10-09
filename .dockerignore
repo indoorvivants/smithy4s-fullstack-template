@@ -1,8 +1,12 @@
 **/target
 **/node_modules
 Dockerfile
-.git 
-.sbt 
+.git
+.sbt
 .metals
 .bsp
 **/.bloop
+.zed
+**/*.log
+**/dist
+.env

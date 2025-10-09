@@ -39,47 +39,6 @@ lazy val root = project
   .aggregate(backend.projectRefs*)
   .aggregate(shared.projectRefs*)
   .aggregate(frontend.projectRefs*)
-// .aggregate(app.projectRefs*)
-
-// lazy val app = projectMatrix
-//   .in(file("modules/app"))
-//   .dependsOn(backend)
-//   .defaultAxes(defaults*)
-//   .jvmPlatform(Seq(Versions.Scala))
-//   .enablePlugins(JavaAppPackaging)
-//   .settings(
-//     // Docker configuration
-//     dockerBaseImage         := Config.DockerBaseImage,
-//     Compile / doc / sources := Seq.empty,
-//     Docker / packageName    := Config.DockerImageName,
-
-//     // dependencies
-//     libraryDependencies ++= Seq(
-//       "org.http4s"    %% "http4s-ember-server" % Versions.http4s,
-//       "org.postgresql" % "postgresql"          % Versions.Postgres,
-//       "org.flywaydb"   % "flyway-core"         % Versions.Flyway
-//     ),
-//     // embedding frontend in backend's resources
-//     Compile / resourceGenerators += {
-//       Def.task[Seq[File]] {
-//         copyAll(
-//           frontendBundle.value,
-//           (Compile / resourceManaged).value / "assets"
-//         )
-//       }
-//     },
-//   )
-
-// def copyAll(location: File, outDir: File) = {
-//   IO.listFiles(location).toList.map { file =>
-//     val (name, ext) = file.baseAndExt
-//     val out         = outDir / (name + "." + ext)
-
-//     IO.copyFile(file, out)
-
-//     out
-//   }
-// }
 
 lazy val backend = projectMatrix
   .in(file("modules/backend"))
@@ -99,7 +58,8 @@ lazy val backend = projectMatrix
     ),
     Compile / doc / sources := Seq.empty,
     reStart / baseDirectory := (ThisBuild / baseDirectory).value,
-    run / baseDirectory     := (ThisBuild / baseDirectory).value
+    run / baseDirectory     := (ThisBuild / baseDirectory).value,
+    (Compile / compile) := ((Compile / compile) dependsOn (Compile / copyResources)).value
   )
 
 lazy val shared = projectMatrix
@@ -183,32 +143,6 @@ addCommandAlias(
   "integrationTests",
   s"tests/testOnly ${Config.BasePackage}.tests.integration.*"
 )
-
-// addCommandAlias(
-//   "playwrightTests",
-//   s"tests/testOnly ${Config.BasePackage}.tests.playwright.*"
-// )
-
-addCommandAlias(
-  "publishDocker",
-  "app/Docker/publishLocal"
-)
-
-lazy val buildFrontend = taskKey[Unit]("")
-
-// buildFrontend := {
-//   val (_, folder) = frontendModules.value
-//   val buildDir    = (ThisBuild / baseDirectory).value / "build" / "frontend"
-
-//   val indexHtml = buildDir / "index.html"
-//   val out       = folder.getParentFile() / "index.html"
-
-//   import java.nio.file.Files
-
-//   if (!Files.exists(out.toPath) || IO.read(indexHtml) != IO.read(out)) {
-//     IO.copyFile(indexHtml, out)
-//   }
-// }
 
 ThisBuild / concurrentRestrictions ++= {
   if (sys.env.contains("CI")) {

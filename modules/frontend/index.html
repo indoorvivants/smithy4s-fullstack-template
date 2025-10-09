@@ -1,12 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>frontend</title>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="/main.js"></script>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>frontend</title>
+    </head>
+    <body>
+        <div class="container">
+            <p class="lead">
+                This is a simple template of a full stack application that uses
+                <a href="https://www.scala-js.org/">Scala.js</a> on the
+                frontend, <a href="https://http4s.org/">Http4s</a> on the
+                backend,
+                <a href="https://disneystreaming.github.io/smithy4s/"
+                    >Smithy4s</a
+                >
+                for communication protocol.
+            </p>
+            <p class="lead">
+                It deploys from a single self-contained Dockerfile.
+            </p>
+            <p class="lead">
+                <a
+                    href="https://github.com/indoorvivants/smithy4s-fullstack-template"
+                    >GitHub</a
+                >
+            </p>
+            <p class="lead">
+                The application allows adding keys with integer values, and
+                incrementing them. The data is persisted in Postgres, using
+                <a href="https://typelevel.org/skunk/">Skunk</a>.
+            </p>
+            <div id="root"></div>
+        </div>
+        <script type="module" src="/main.js"></script>
+    </body>
 </html>

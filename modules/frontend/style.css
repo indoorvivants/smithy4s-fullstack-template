@@ -1,1 +1,133 @@
-body {background-color: #f0f0f0;}
+body {
+    background-color: rgb(0, 20, 24);
+    color: white;
+    font-size: 1.8rem;
+    font-family:
+        "Wotfard",
+        Futura,
+        -apple-system,
+        sans-serif;
+
+    padding: 30px;
+}
+p.lead {
+    font-size: 1.5rem;
+    color: wheat;
+}
+
+p.lead a {
+    color: wheat;
+    text-decoration-line: underline;
+}
+
+p.lead a:hover {
+    text-decoration-line: none;
+}
+
+html {
+    height: 100%;
+}
+
+div.container {
+    height: 100%;
+    margin: auto;
+    max-width: 800px;
+}
+
+.btn {
+    padding: 10px;
+    font-size: 2rem;
+}
+
+.inp {
+    padding: 5px;
+    font-size: 2rem;
+}
+
+div.row div.item-key {
+    width: 50%;
+}
+div.row div.item-value {
+    width: 20%;
+}
+
+p.link-bar {
+    display: flex;
+    gap: 15px;
+}
+
+p.link-bar a {
+    color: white;
+    text-decoration-line: underline;
+}
+
+p.link-bar a:hover {
+    text-decoration-line: none;
+}
+
+.rows {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: auto;
+    max-width: 500px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px dashed white;
+}
+
+div.add-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 10px;
+    margin-bottom: 50px;
+}
+
+div.add-form-row {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+div.add-form-row p.lead {
+    min-width: 150px;
+}
+
+div.add-form * {
+    flex: 0;
+}
+
+.key {
+    width: 200px;
+}
+
+.value {
+    width: 50px;
+}
+
+a.item-delete-button {
+    color: red;
+    text-decoration-line: none;
+}
+
+a.item-delete-button:hover {
+    text-decoration-line: underline;
+}
+
+button.item-decrement-button {
+    font-size: 2rem;
+    text-decoration-line: none;
+}
+
+button.item-increment-button {
+    font-size: 2rem;
+    text-decoration-line: none;
+}
