@@ -21,27 +21,35 @@ object AddKeyForm:
           }
         },
         div(
-          // Styles.addForm,
           cls := "add-form",
-          input(
-            idAttr      := "input-key",
-            tpe         := "text",
-            placeholder := "key",
-            value <-- keyVar.signal.map(_.getOrElse("")),
-            onInput.mapToValue
-              .map(_.trim)
-              .map(s => Option.when(s.nonEmpty)(s)) --> keyVar.writer
-            // Styles.inp
+          div(
+            cls := "add-form-row",
+            p(cls := "lead", "Key:"),
+            input(
+              idAttr      := "input-key",
+              tpe         := "text",
+              placeholder := "key",
+              cls         := "inp",
+              value <-- keyVar.signal.map(_.getOrElse("")),
+              onInput.mapToValue
+                .map(_.trim)
+                .map(s => Option.when(s.nonEmpty)(s)) --> keyVar.writer
+            )
           ),
-          input(
-            idAttr      := "input-value",
-            tpe         := "text",
-            placeholder := "value",
-            value <-- valueVar.signal.map(_.toString),
-            onInput.mapToValue
-              .map(_.toIntOption)
-              .map(_.getOrElse(0)) --> valueVar.writer,
-            cls := "inp"
+          div(
+            cls := "add-form-row",
+            p(cls := "lead", "Value:"),
+            input(
+              cls         := "inp",
+              idAttr      := "input-value",
+              tpe         := "text",
+              placeholder := "value",
+              value <-- valueVar.signal.map(_.toString),
+              onInput.mapToValue
+                .map(_.toIntOption)
+                .map(_.getOrElse(0)) --> valueVar.writer,
+              cls := "inp"
+            )
           ),
           button(tpe := "submit", idAttr := "input-submit", "add", cls := "btn")
         )
