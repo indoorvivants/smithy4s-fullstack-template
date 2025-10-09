@@ -21,7 +21,8 @@ object AddKeyForm:
           }
         },
         div(
-          Styles.addForm,
+          // Styles.addForm,
+          cls := "add-form",
           input(
             idAttr      := "input-key",
             tpe         := "text",
@@ -29,8 +30,8 @@ object AddKeyForm:
             value <-- keyVar.signal.map(_.getOrElse("")),
             onInput.mapToValue
               .map(_.trim)
-              .map(s => Option.when(s.nonEmpty)(s)) --> keyVar.writer,
-            Styles.inp
+              .map(s => Option.when(s.nonEmpty)(s)) --> keyVar.writer
+            // Styles.inp
           ),
           input(
             idAttr      := "input-value",
@@ -40,9 +41,9 @@ object AddKeyForm:
             onInput.mapToValue
               .map(_.toIntOption)
               .map(_.getOrElse(0)) --> valueVar.writer,
-            Styles.inp
+            cls := "inp"
           ),
-          button(tpe := "submit", idAttr := "input-submit", "add", Styles.btn)
+          button(tpe := "submit", idAttr := "input-submit", "add", cls := "btn")
         )
       )
 

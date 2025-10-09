@@ -13,4 +13,6 @@ def Server(config: HttpConfig, app: HttpApp[IO]) =
     .withShutdownTimeout(1.second)
     .withHttpApp(app)
     .build
+    .evalTap: server =>
+      Log.info(s"Server started on ${server.baseUri}")
 end Server

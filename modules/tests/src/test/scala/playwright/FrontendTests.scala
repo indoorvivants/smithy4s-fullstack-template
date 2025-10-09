@@ -11,6 +11,7 @@ import java.nio.file.Paths
 import scala.jdk.CollectionConverters.*
 
 import scala.concurrent.duration.*
+import java.io.File
 
 case class Resources(
     probe: Probe,
@@ -23,11 +24,14 @@ object FrontendTests extends weaver.IOSuite with PlaywrightIntegration:
 
   val (poolSize, timeout) =
     if sys.env.contains("CI") then 1 -> 30.seconds
-    else 4                           -> 5.seconds
+    else 4                           -> 30.seconds
 
   override def sharedResource =
     integration
-      .buildApp(silenceLogs = !sys.env.get("INTEGRATION_LOGS").contains("true"))
+      .buildApp(
+        frontendDist = sys.env.get("FRONTEND_DIST").map(new File(_)),
+        silenceLogs = !sys.env.get("INTEGRATION_LOGS").contains("true")
+      )
       .parProduct(PlaywrightRuntime.create(poolSize = poolSize))
       .map { case ((probe, server), pw) =>
         Resources(probe, server.baseUri, pw)

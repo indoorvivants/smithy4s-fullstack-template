@@ -14,6 +14,8 @@ object FlyioBootstrap:
       val userName = userInfo.split(":").apply(0)
       val password = userInfo.split(":").apply(1)
 
-      PgCredentials(host, port, userName, dbName, Some(password))
+      val ssl = false
+
+      PgCredentials(host, port, userName, dbName, Some(password), ssl = ssl)
     }
 end FlyioBootstrap

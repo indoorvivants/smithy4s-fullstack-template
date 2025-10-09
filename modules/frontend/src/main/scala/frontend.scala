@@ -23,16 +23,8 @@ enum Event:
   )
 
   renderOnDomContentLoaded(
-    dom.document.getElementById("appContainer"), {
-      import scalacss.ProdDefaults.*
-
-      val sty = styleTag(Styles.render[String], `type` := "text/css")
-      dom.document.querySelector("head").appendChild(sty.ref)
-
-      val sty1 = styleTag(GlobalStyles.render[String], `type` := "text/css")
-      dom.document.querySelector("head").appendChild(sty1.ref)
-      app
-    }
+    dom.document.getElementById("root"),
+    app
   )
 
 end frontend
@@ -74,36 +66,32 @@ def indexPage(using
   div(
     addForm.node,
     div(
-      Styles.rows,
+      cls := "rows",
       children <--
-        events.toObservable.startWithNone.flatMap { _ =>
+        events.toObservable.startWithNone.flatMapSwitch { _ =>
           api
             .stream(_.hello.getAll())
             .map(_.pairs)
             .map { pairs =>
               pairs.map { pair =>
                 div(
-                  Styles.row,
-                  div(Styles.key, pair.key.value, className := "item-key"),
+                  cls := "row",
+                  div(pair.key.value, className := "item-key"),
                   div(
-                    Styles.value,
                     pair.value.value,
                     className := "item-value"
                   ),
                   button(
                     "+",
-                    Styles.btn,
                     increment(pair.key),
                     className := "item-increment-button"
                   ),
                   button(
                     "-",
-                    Styles.btn,
                     decrement(pair.key),
                     className := "item-decrement-button"
                   ),
                   a(
-                    Styles.bigRedCross,
                     "X",
                     href := "#",
                     delete(pair.key),

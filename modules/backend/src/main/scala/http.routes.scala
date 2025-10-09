@@ -12,25 +12,23 @@ import smithy4s.http4s.SimpleProtocolBuilder
 import smithy4s.http4s.SimpleRestJsonBuilder
 import org.http4s.Response
 
-type ErrorLogger = (Request[IO], Throwable) => IO[Unit]
-object ErrorLogger:
-  val void: ErrorLogger = (_, _) => IO.unit
-
 object Routes:
   def build(
       app: Services,
-      errorLogger: ErrorLogger = ErrorLogger.void
+      extra: HttpRoutes[IO]*
   ) =
     def handleErrors(routes: HttpRoutes[IO]) =
       routes.orNotFound.onError { exc =>
-        Kleisli(request => errorLogger(request, exc))
+        Kleisli(request => Log.error(s"Request failed: [$request]", exc))
       }
 
-    val serviceRoutes = SimpleRestJsonBuilder.routes(app.hello).resource
-    val staticRoutes  = Static.routes
-
-    (serviceRoutes, staticRoutes)
-      .parMapN(_ <+> _)
-      .map(handleErrors)
+    SimpleRestJsonBuilder
+      .routes(app.hello)
+      .resource
+      .map: serviceRoutes =>
+        handleErrors(
+          (serviceRoutes :: extra.toList)
+            .reduce(_ <+> _)
+        )
   end build
 end Routes
