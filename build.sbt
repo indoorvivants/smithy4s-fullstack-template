@@ -7,40 +7,31 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 val Versions = new {
   val http4s = "0.23.30"
 
-  val Scala = "3.3.6"
+  val Scala = "3.7.3"
 
-  val scribe = "3.11.5"
+  val scribe = "3.15.0"
 
-  val http4sDom = "0.2.7"
+  val smithy4sFetch = "0.0.4"
 
-  val Flyway = "9.15.2"
+  val TestContainers = "0.43.0"
 
-  val Postgres = "42.7.8"
-
-  val TestContainers = "0.40.9"
-
-  val Weaver = "0.8.1"
+  val Weaver = "0.10.1"
 
   val Playwright = "0.0.5"
 
-  val Laminar = "15.0.0-M7"
+  val Laminar = "17.2.1"
 
-  val waypoint = "6.0.0-M5"
-
-  val scalacss = "1.0.0"
+  val waypoint = "9.0.0"
 
   val circe = "0.14.5"
 
-  val doobie = "1.0.0-RC2"
+  val skunk = "1.0.0-M11"
 
   val macroTaskExecutor = "1.1.1"
-
 }
 
 val Config = new {
-  val DockerImageName = "smithy4s-fullstack"
-  val DockerBaseImage = "eclipse-temurin:17"
-  val BasePackage     = "hellosmithy4s"
+  val BasePackage = "hellosmithy4s"
 }
 
 lazy val root = project
@@ -48,69 +39,67 @@ lazy val root = project
   .aggregate(backend.projectRefs*)
   .aggregate(shared.projectRefs*)
   .aggregate(frontend.projectRefs*)
-  .aggregate(app.projectRefs*)
+// .aggregate(app.projectRefs*)
 
-resolvers +=
-  "Sonatype S01 OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots"
+// lazy val app = projectMatrix
+//   .in(file("modules/app"))
+//   .dependsOn(backend)
+//   .defaultAxes(defaults*)
+//   .jvmPlatform(Seq(Versions.Scala))
+//   .enablePlugins(JavaAppPackaging)
+//   .settings(
+//     // Docker configuration
+//     dockerBaseImage         := Config.DockerBaseImage,
+//     Compile / doc / sources := Seq.empty,
+//     Docker / packageName    := Config.DockerImageName,
 
-lazy val app = projectMatrix
-  .in(file("modules/app"))
-  .dependsOn(backend)
-  .defaultAxes(defaults*)
-  .jvmPlatform(Seq(Versions.Scala))
-  .enablePlugins(JavaAppPackaging)
-  .settings(
-    // Docker configuration
-    dockerBaseImage         := Config.DockerBaseImage,
-    Compile / doc / sources := Seq.empty,
-    Docker / packageName    := Config.DockerImageName,
+//     // dependencies
+//     libraryDependencies ++= Seq(
+//       "org.http4s"    %% "http4s-ember-server" % Versions.http4s,
+//       "org.postgresql" % "postgresql"          % Versions.Postgres,
+//       "org.flywaydb"   % "flyway-core"         % Versions.Flyway
+//     ),
+//     // embedding frontend in backend's resources
+//     Compile / resourceGenerators += {
+//       Def.task[Seq[File]] {
+//         copyAll(
+//           frontendBundle.value,
+//           (Compile / resourceManaged).value / "assets"
+//         )
+//       }
+//     },
+//   )
 
-    // dependencies
-    libraryDependencies ++= Seq(
-      "org.http4s"    %% "http4s-ember-server" % Versions.http4s,
-      "org.postgresql" % "postgresql"          % Versions.Postgres,
-      "org.flywaydb"   % "flyway-core"         % Versions.Flyway
-    ),
-    // embedding frontend in backend's resources
-    Compile / resourceGenerators += {
-      Def.task[Seq[File]] {
-        copyAll(
-          frontendBundle.value,
-          (Compile / resourceManaged).value / "assets"
-        )
-      }
-    },
-    reStart / baseDirectory := (ThisBuild / baseDirectory).value,
-    run / baseDirectory     := (ThisBuild / baseDirectory).value
-  )
+// def copyAll(location: File, outDir: File) = {
+//   IO.listFiles(location).toList.map { file =>
+//     val (name, ext) = file.baseAndExt
+//     val out         = outDir / (name + "." + ext)
 
-def copyAll(location: File, outDir: File) = {
-  IO.listFiles(location).toList.map { file =>
-    val (name, ext) = file.baseAndExt
-    val out         = outDir / (name + "." + ext)
+//     IO.copyFile(file, out)
 
-    IO.copyFile(file, out)
-
-    out
-  }
-}
+//     out
+//   }
+// }
 
 lazy val backend = projectMatrix
   .in(file("modules/backend"))
   .dependsOn(shared)
   .defaultAxes(defaults*)
   .jvmPlatform(Seq(Versions.Scala))
+  .enablePlugins(JavaAppPackaging)
   .settings(
     libraryDependencies ++= Seq(
-      "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
-      "com.outr"     %% "scribe"          % Versions.scribe,
-      "com.outr"     %% "scribe-cats"     % Versions.scribe,
-      "com.outr"     %% "scribe-slf4j"    % Versions.scribe,
-      "org.tpolecat" %% "doobie-core"     % Versions.doobie,
-      "org.tpolecat" %% "doobie-postgres" % Versions.doobie,
-      "org.tpolecat" %% "doobie-hikari"   % Versions.doobie
+      "org.http4s" %%% "http4s-ember-server" % Versions.http4s,
+      "com.disneystreaming.smithy4s" %%% "smithy4s-http4s" % smithy4sVersion.value,
+      "com.outr"     %%% "scribe"       % Versions.scribe,
+      "com.outr"     %%% "scribe-cats"  % Versions.scribe,
+      "com.outr"     %%% "scribe-slf4j" % Versions.scribe,
+      "org.tpolecat" %%% "skunk-core"   % Versions.skunk,
+      "dev.rolang"   %%% "dumbo"        % "0.6.0"
     ),
-    Compile / doc / sources := Seq.empty
+    Compile / doc / sources := Seq.empty,
+    reStart / baseDirectory := (ThisBuild / baseDirectory).value,
+    run / baseDirectory     := (ThisBuild / baseDirectory).value
   )
 
 lazy val shared = projectMatrix
@@ -127,107 +116,56 @@ lazy val shared = projectMatrix
 
 lazy val frontend = projectMatrix
   .in(file("modules/frontend"))
-  .customRow(
-    Seq(Versions.Scala),
-    axisValues = Seq(VirtualAxis.js, BuildStyle.SingleFile),
-    Seq.empty
-  )
-  .customRow(
-    Seq(Versions.Scala),
-    axisValues = Seq(VirtualAxis.js, BuildStyle.Modules),
-    Seq.empty
-  )
+  .jsPlatform(Seq(Versions.Scala))
   .defaultAxes((defaults :+ VirtualAxis.js)*)
   .dependsOn(shared)
-  .enablePlugins(ScalaJSPlugin)
+  .enablePlugins(ForgeViteWebappPlugin)
   .settings(
-    scalaJSUseMainModuleInitializer := true,
-    scalaJSLinkerConfig := {
-      val config = scalaJSLinkerConfig.value
-      import org.scalajs.linker.interface.OutputPatterns
-      if (virtualAxes.value.contains(BuildStyle.SingleFile)) config
-      else
-        config
-          .withModuleSplitStyle(
-            ModuleSplitStyle
-              .SmallModulesFor(List(s"${Config.BasePackage}.frontend"))
-          )
-          .withModuleKind(ModuleKind.ESModule)
-          .withOutputPatterns(OutputPatterns.fromJSFile("%s.mjs"))
-    },
     libraryDependencies ++= Seq(
-      "com.raquo"                    %%% "waypoint"     % Versions.waypoint,
-      "com.github.japgolly.scalacss" %%% "core"         % Versions.scalacss,
-      "com.raquo"                    %%% "laminar"      % Versions.Laminar,
-      "io.circe"                     %%% "circe-core"   % Versions.circe,
-      "io.circe"                     %%% "circe-parser" % Versions.circe,
-      "org.http4s"                   %%% "http4s-dom"   % Versions.http4sDom,
+      "com.raquo"    %%% "waypoint"       % Versions.waypoint,
+      "com.raquo"    %%% "laminar"        % Versions.Laminar,
+      "io.circe"     %%% "circe-core"     % Versions.circe,
+      "io.circe"     %%% "circe-parser"   % Versions.circe,
+      "tech.neander" %%% "smithy4s-fetch" % Versions.smithy4sFetch,
       "org.scala-js" %%% "scala-js-macrotask-executor" % Versions.macroTaskExecutor
     )
   )
 
 lazy val tests = projectMatrix
   .in(file("modules/tests"))
-  .dependsOn(app)
+  .dependsOn(backend)
   .defaultAxes(defaults*)
   .jvmPlatform(Seq(Versions.Scala))
   .settings(
     libraryDependencies ++= Seq(
       // test dependencies
       "com.dimafeng" %% "testcontainers-scala-postgresql" % Versions.TestContainers % Test,
-      "com.disneystreaming" %% "weaver-cats"         % Versions.Weaver   % Test,
-      "org.http4s"          %% "http4s-ember-server" % Versions.http4s   % Test,
-      "org.http4s"          %% "http4s-ember-client" % Versions.http4s   % Test,
-      "org.postgresql"       % "postgresql"          % Versions.Postgres % Test,
-      "org.flywaydb"         % "flyway-core"         % Versions.Flyway   % Test,
+      "org.typelevel" %%% "weaver-cats"         % Versions.Weaver % Test,
+      "org.http4s"    %%% "http4s-ember-server" % Versions.http4s % Test,
+      "org.http4s"    %%% "http4s-ember-client" % Versions.http4s % Test,
+      "dev.rolang"    %%% "dumbo"               % "0.6.0",
       "com.indoorvivants.playwright" %% "weaver" % Versions.Playwright % Test
     ),
-    Compile / resourceGenerators += {
-      Def.task[Seq[File]] {
-        copyAll(
-          frontendBundle.value,
-          (Compile / resourceManaged).value / "assets"
-        )
-      }
-    },
-    testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
-    Test / fork             := true,
+    Test / fork := true,
+    Test / envVars += "FRONTEND_DIST" -> ((frontend.js(
+      Versions.Scala
+    ) / sourceDirectory).value.getParentFile() / "dist").toString,
     Compile / doc / sources := Seq.empty
   )
 
 lazy val defaults =
   Seq(VirtualAxis.scalaABIVersion(Versions.Scala), VirtualAxis.jvm)
 
-lazy val frontendModules = taskKey[(Report, File)]("")
-ThisBuild / frontendModules := (Def.taskIf {
-  def proj = frontend.finder(BuildStyle.Modules)(
-    Versions.Scala
+val playwrightTests = taskKey[Unit]("")
+lazy val cmd        = s"${Config.BasePackage}.tests.playwright.*"
+Global / playwrightTests := Def
+  .sequential(
+    Seq(
+      (frontend.js(Versions.Scala) / frontendBuild).toTask(""),
+      (tests.jvm(Versions.Scala) / Test / testOnly).toTask(" " + cmd)
+    )
   )
-
-  if (isRelease)
-    (proj / Compile / fullLinkJS).value.data ->
-      (proj / Compile / fullLinkJS / scalaJSLinkerOutputDirectory).value
-  else
-    (proj / Compile / fastLinkJS).value.data ->
-      (proj / Compile / fastLinkJS / scalaJSLinkerOutputDirectory).value
-}).value
-
-lazy val frontendBundle = taskKey[File]("")
-ThisBuild / frontendBundle := (Def.taskIf {
-  def proj = frontend.finder(BuildStyle.SingleFile)(
-    Versions.Scala
-  )
-
-  if (isRelease) {
-    val res = (proj / Compile / fullLinkJS).value
-    (proj / Compile / fullLinkJS / scalaJSLinkerOutputDirectory).value
-  } else {
-    val res = (proj / Compile / fastLinkJS).value
-    (proj / Compile / fastLinkJS / scalaJSLinkerOutputDirectory).value
-  }
-}).value
-
-lazy val isRelease = sys.env.get("RELEASE").contains("yesh")
+  .value
 
 addCommandAlias(
   "stubTests",
@@ -246,10 +184,10 @@ addCommandAlias(
   s"tests/testOnly ${Config.BasePackage}.tests.integration.*"
 )
 
-addCommandAlias(
-  "playwrightTests",
-  s"tests/testOnly ${Config.BasePackage}.tests.playwright.*"
-)
+// addCommandAlias(
+//   "playwrightTests",
+//   s"tests/testOnly ${Config.BasePackage}.tests.playwright.*"
+// )
 
 addCommandAlias(
   "publishDocker",
@@ -258,19 +196,19 @@ addCommandAlias(
 
 lazy val buildFrontend = taskKey[Unit]("")
 
-buildFrontend := {
-  val (_, folder) = frontendModules.value
-  val buildDir    = (ThisBuild / baseDirectory).value / "build" / "frontend"
+// buildFrontend := {
+//   val (_, folder) = frontendModules.value
+//   val buildDir    = (ThisBuild / baseDirectory).value / "build" / "frontend"
 
-  val indexHtml = buildDir / "index.html"
-  val out       = folder.getParentFile() / "index.html"
+//   val indexHtml = buildDir / "index.html"
+//   val out       = folder.getParentFile() / "index.html"
 
-  import java.nio.file.Files
+//   import java.nio.file.Files
 
-  if (!Files.exists(out.toPath) || IO.read(indexHtml) != IO.read(out)) {
-    IO.copyFile(indexHtml, out)
-  }
-}
+//   if (!Files.exists(out.toPath) || IO.read(indexHtml) != IO.read(out)) {
+//     IO.copyFile(indexHtml, out)
+//   }
+// }
 
 ThisBuild / concurrentRestrictions ++= {
   if (sys.env.contains("CI")) {
@@ -295,16 +233,16 @@ import sbtwelcome.*
 
 logo :=
   s"""
-     | ##### ###### #    # #####  #        ##   ##### ###### 
-     |   #   #      ##  ## #    # #       #  #    #   #      
-     |   #   #####  # ## # #    # #      #    #   #   #####  
-     |   #   #      #    # #####  #      ######   #   #      
-     |   #   #      #    # #      #      #    #   #   #      
+     | ##### ###### #    # #####  #        ##   ##### ######
+     |   #   #      ##  ## #    # #       #  #    #   #
+     |   #   #####  # ## # #    # #      #    #   #   #####
+     |   #   #      #    # #####  #      ######   #   #
+     |   #   #      #    # #      #      #    #   #   #
      |   #   ###### #    # #      ###### #    #   #   ######
      |
      |Version: ${version.value}
      |
-     |${scala.Console.YELLOW}Scala ${(app.jvm(
+     |${scala.Console.YELLOW}Scala ${(backend.jvm(
       true
     ) / scalaVersion).value}${scala.Console.RESET}
      |
@@ -323,6 +261,6 @@ usefulTasks := Seq(
     "pt",
     "playwrightTests",
     "Playwright tests - verify frontend works in a browser, slower than slow"
-  ),
-  UsefulTask("pd", "publishDocker", "Publish app's docker container")
+  )
+  // UsefulTask("pd", "publishDocker", "Publish app's docker container")
 )

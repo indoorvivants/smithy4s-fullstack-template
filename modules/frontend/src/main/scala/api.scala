@@ -5,37 +5,45 @@ import org.http4s.Uri
 import cats.effect.IO
 
 import spec.HelloService
-import smithy4s.http4s.SimpleRestJsonBuilder
-import org.http4s.dom.FetchClientBuilder
-import org.scalajs.dom
+
 import scala.concurrent.Future
-import cats.effect.unsafe.implicits.global
+import scala.scalajs.js
+import scala.scalajs.js.Promise
+import scala.scalajs.js.Thenable.Implicits.*
+import scala.util.Failure
+import scala.util.Success
+import com.raquo.airstream.core.EventStream
+import com.raquo.airstream.core.Signal
+import smithy4s_fetch.SimpleRestJsonFetchClient
 
-case class Api(
-    hello: HelloService[IO]
+def api(using a: Api): Api = a
+
+class Api private (
+    val hello: HelloService[Promise]
 ):
-  import com.raquo.airstream.core.EventStream as LaminarStream
   import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
-  def future[A](a: Api => IO[A]): Future[A] =
-    a(this).unsafeToFuture()
+  def future[A](a: Api => Promise[A]): Future[A] =
+    a(this)
 
-  def stream[A](a: Api => IO[A]): LaminarStream[A] =
-    LaminarStream.fromFuture(future(a))
+  def futureAttempt[A](a: Api => Promise[A]): Future[Either[Throwable, A]] =
+    a(this).transform:
+      case Success(value)     => Success(Right(value))
+      case Failure(exception) => Success(Left(exception))
+
+  def stream[A](a: Api => Promise[A]): EventStream[A] =
+    EventStream.fromJsPromise(a(this))
+
+  def signal[A](a: Api => Promise[A]): Signal[Option[A]] =
+    Signal.fromJsPromise(a(this))
 end Api
 
 object Api:
-  def create(location: String = dom.window.location.origin.get) =
-    val uri = Uri.unsafeFromString(location)
+  def create(location: String = org.scalajs.dom.window.location.origin) =
 
-    val client = FetchClientBuilder[IO].create
+    val client =
+      SimpleRestJsonFetchClient(HelloService, location).make
 
-    val hello =
-      SimpleRestJsonBuilder(HelloService)
-        .client(client)
-        .uri(uri)
-        .use
-        .fold(throw _, identity)
+    Api(client)
 
-    Api(hello)
   end create
 end Api

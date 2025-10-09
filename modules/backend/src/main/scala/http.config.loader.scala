@@ -11,7 +11,7 @@ object HttpConfigLoader:
       port = cli.port
         .flatMap(Port.fromInt)
         .orElse(env.get("PORT").flatMap(Port.fromString))
-        .getOrElse(port"9000"),
+        .getOrElse(port"8080"),
       host = host"0.0.0.0",
       deployment = cli.deployment
     )

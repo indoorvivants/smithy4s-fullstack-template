@@ -45,9 +45,6 @@ object Page:
     serializePage = pg => pg.asJson.noSpaces,
     deserializePage = str =>
       io.circe.scalajs.decodeJs[Page](JSON.parse(str)).fold(throw _, identity)
-  )(
-    popStateEvents = windowEvents(_.onPopState),
-    owner = L.unsafeWindowOwner
   )
 end Page
 

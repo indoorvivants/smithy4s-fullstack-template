@@ -4,6 +4,7 @@ import cats.effect.*
 import cats.syntax.all.*
 import org.http4s.server.Server
 import java.io.File
+import org.typelevel.otel4s.trace.Tracer
 
 def bootstrap(
     arguments: List[String],
@@ -16,14 +17,15 @@ def bootstrap(
   val opts = cliConfig.optsFile match
     case None => IO(Map.empty)
     case Some(file) =>
-      loadProps(file).handleErrorWith { err =>
-        logger
-          .error(
-            s"Failed to load properties from file ${file.getAbsolutePath}",
-            err
-          )
-          .as(Map.empty)
-      }
+      Log.info(s"Loading env from $file") *>
+        DotEnvLoader.load(file).handleErrorWith { err =>
+          logger
+            .error(
+              s"Failed to load properties from file ${file.getAbsolutePath}",
+              err
+            )
+            .as(Map.empty)
+        }
 
   val allEnv = opts.map { fallback =>
     (systemEnv.keySet ++ fallback.keySet).flatMap { key =>
@@ -36,6 +38,8 @@ def bootstrap(
   for
     env <- Resource.eval(allEnv)
 
+    given Tracer[IO] = Tracer.Implicits.noop[IO]
+
     httpConfig = HttpConfigLoader.bootstrap(
       cliConfig,
       env
@@ -43,9 +47,9 @@ def bootstrap(
     cloudDb = cliConfig.cloud match
       case Cloud.Flyio => FlyioBootstrap.pgCredentials(env)
 
-    pgCredentials = cloudDb.getOrElse(PgCredentials.from(env))
+    pgCredentials = cloudDb.getOrElse(PgCredentials.defaults(env))
 
-    db <- DoobieDatabase.hikari(pgCredentials)
+    db <- SkunkDatabase.make(pgCredentials, SkunkConfig)
 
     services = Services.build(
       logger,
@@ -53,11 +57,10 @@ def bootstrap(
     )
 
     routes <- Routes.build(
-      services,
-      (req, exc) => logger.error(s"[HTTP REQUEST FAILED] $req", exc)
+      services
     )
 
-    _ <- migrate(pgCredentials)
+    _ <- migrate(pgCredentials).toResource
 
     server <- Server(httpConfig, routes)
   yield server
