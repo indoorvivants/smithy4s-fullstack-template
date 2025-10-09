@@ -5,73 +5,73 @@ import cats.effect.IO
 import spec.*
 
 import cats.*, cats.data.*, cats.implicits.*
-import doobie.*, doobie.implicits.*
+import skunk.{Codec, Query}
+import skunk.implicits.*
+import skunk.codec.all.*
+
+import smithy4s.Newtype
+import skunk.data.Completion
+import skunk.Command
+
 import smithy4s.Newtype
 
 sealed trait SqlOp[I, O]
 
-sealed abstract class SqlQuery[I, O](val input: I, val out: Query0[O])
+sealed abstract class SqlQuery[I, O](val input: I, val out: Query[I, O])
     extends SqlOp[I, O]
-sealed abstract class SqlUpdate[I](val input: I, val out: Update0)
+sealed abstract class SqlUpdate[I](val input: I, val out: Command[I])
     extends SqlOp[I, Int]
 
-private def ntGet[T: Get](nt: Newtype[T]): Get[nt.Type] =
-  Get[T].map(nt.apply)
-
-private def ntPut[T: Put](nt: Newtype[T]): Put[nt.Type] =
-  Put[T].contramap[nt.Type](_.value)
-
-given Get[Key]   = ntGet(Key)
-given Get[Value] = ntGet(Value)
-
-given Put[Key]   = ntPut(Key)
-given Put[Value] = ntPut(Value)
-
 object operations:
+  private object C:
+    def newtypeCodec[A](nt: Newtype[A], underlying: Codec[A]): Codec[nt.Type] =
+      underlying.imap(nt.apply)(_.value)
+    val keyCodec   = newtypeCodec(Key, varchar(50))
+    val valueCodec = newtypeCodec(Value, int4)
+    val pairCodec  = (keyCodec *: valueCodec).to[Pair]
 
+  import C.*
   case class Get(key: Key)
       extends SqlQuery(
         key,
-        sql"select value from examples where key = $key"
-          .query[Int]
-          .map(Value.apply)
+        sql"select value from examples where key = $keyCodec"
+          .query(valueCodec)
       )
 
   case object GetAll
       extends SqlQuery(
-        (),
+        skunk.Void,
         sql"select key, value from examples order by key"
-          .query[(Key, Value)]
-          .map(Pair.apply)
+          .query(pairCodec)
       )
 
-  case class Create(key: Key, value: Option[Value])
+  case class Create(key: Key, value: Value)
       extends SqlUpdate(
-        key,
-        sql"insert into examples (key, value) values ($key, ${value.map(_.value).getOrElse(0)})".update
+        (key, value),
+        sql"insert into examples (key, value) values ($keyCodec, $valueCodec)".command
       )
 
   case class Delete(key: Key)
       extends SqlUpdate(
         key,
-        sql"delete from examples where key = $key".update
+        sql"delete from examples where key = $keyCodec".command
       )
 
   case class Inc(key: Key)
       extends SqlUpdate(
         key,
-        sql"update examples set value = value + 1 where key = $key".update
+        sql"update examples set value = value + 1 where key = $keyCodec".command
       )
 
   case class Dec(key: Key)
       extends SqlUpdate(
         key,
-        sql"update examples set value = value - 1 where key = $key".update
+        sql"update examples set value = value - 1 where key = $keyCodec".command
       )
 
   case class Update(key: Key, value: Value)
       extends SqlUpdate(
-        key,
-        sql"update examples set value = ${value.value} where key = $key".update
+        (value, key),
+        sql"update examples set value = $valueCodec where key = $keyCodec".command
       )
 end operations
