@@ -60,4 +60,4 @@ jobs:
           export FLYCTL_INSTALL="$HOME/.fly"
           export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
-          flyctl deploy -i smithy4s-fullstack:latest
+          flyctl deploy -i smithy4s-fullstack:latest --local-only
