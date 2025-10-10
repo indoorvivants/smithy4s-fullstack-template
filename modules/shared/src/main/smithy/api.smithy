@@ -8,7 +8,7 @@ use alloy#uuidFormat
 @simpleRestJson
 service HelloService {
   version: "1.0.0",
-  operations: [Get, Inc, Dec, Update, Create, Delete, GetAll]
+  operations: [Get, Inc, Dec, Update, Create, Delete, GetAll, Health]
 }
 
 @readonly
@@ -16,12 +16,12 @@ service HelloService {
 operation Get {
   input := {
     @httpLabel
-    @required 
+    @required
     key: Key
   }
 
   output := {
-    @required 
+    @required
     value: Value
   }
 
@@ -29,10 +29,20 @@ operation Get {
 }
 
 @readonly
+@http(method: "GET", uri: "/api/health", code: 200)
+operation Health {
+  output := {
+    @required
+    status: String
+  }
+}
+
+
+@readonly
 @http(method: "GET", uri: "/api/list", code: 200)
 operation GetAll {
   output := {
-    @required 
+    @required
     @httpPayload
     pairs: Pairs
   }
@@ -45,10 +55,10 @@ list Pairs {
 }
 
 structure Pair {
-  @required 
-  key: Key 
+  @required
+  key: Key
 
-  @required 
+  @required
   value: Value
 }
 
@@ -56,7 +66,7 @@ structure Pair {
 @http(method: "PUT", uri: "/api/create", code: 204)
 operation Create {
   input := {
-    @required 
+    @required
     key: Key
 
     value: Value
@@ -69,7 +79,7 @@ operation Create {
 @http(method: "DELETE", uri: "/api/delete/{key}", code: 204)
 operation Delete {
   input := {
-    @required 
+    @required
     @httpLabel
     key: Key
   }
@@ -81,7 +91,7 @@ operation Delete {
 operation Inc {
   input := {
     @httpLabel
-    @required 
+    @required
     key: Key
   }
   errors: [KeyNotFound]
@@ -91,7 +101,7 @@ operation Inc {
 operation Dec {
   input := {
     @httpLabel
-    @required 
+    @required
     key: Key
   }
 }
@@ -100,9 +110,9 @@ operation Dec {
 operation Update {
   input := {
     @httpLabel
-    @required 
+    @required
     key: Key,
-    
+
     @required
     value: Value
   }

@@ -8,6 +8,10 @@ import hellosmithy4s.spec.*
 
 class HelloImplementation(logger: Scribe[IO], database: Database)
     extends HelloService[IO]:
+
+  override def health(): IO[HealthOutput] =
+    HealthOutput("OK").pure[IO]
+
   override def get(key: Key): IO[GetOutput] =
     database.option(operations.Get(key)).flatMap {
       case Some(value) => GetOutput(value).pure[IO]
