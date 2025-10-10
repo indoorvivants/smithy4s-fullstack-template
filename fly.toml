@@ -1,7 +1,7 @@
 app = "smithy4s-fullstack-template"
 
 [[services]]
-  internal_port = 9000
+  internal_port = 80
   protocol = "tcp"
   script_checks = []
 
