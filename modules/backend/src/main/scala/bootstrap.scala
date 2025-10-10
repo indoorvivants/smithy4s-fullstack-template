@@ -12,7 +12,7 @@ def bootstrap(
 ): Resource[IO, Server] =
   val logger = scribe.cats.io
   val cliConfig =
-    CLIConfig(None, Option(new File(".env")), Deployment.Local, Cloud.Flyio)
+    CLIConfig(None, Option(new File(".env")), Some(Cloud.Flyio))
 
   val opts = cliConfig.optsFile match
     case None => IO(Map.empty)
@@ -45,7 +45,8 @@ def bootstrap(
       env
     )
     cloudDb = cliConfig.cloud match
-      case Cloud.Flyio => FlyioBootstrap.pgCredentials(env)
+      case Some(Cloud.Flyio) => FlyioBootstrap.pgCredentials(env)
+      case _ => None
 
     pgCredentials = cloudDb.getOrElse(PgCredentials.defaults(env))
 

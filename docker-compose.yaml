@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      PG_HOST: postgres
+      PG_USER: postgres
+      PG_DB: smithy4s_fullstack_template
+      PG_PASSWORD: secret
+  postgres:
+    image: "postgres:17"
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: smithy4s_fullstack_template
