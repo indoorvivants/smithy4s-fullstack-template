@@ -25,7 +25,7 @@ val Versions = new {
 
   val circe = "0.14.5"
 
-  val skunk = "1.0.0-M11"
+  val skunk = "1.0.0-M12"
 
   val macroTaskExecutor = "1.1.1"
 }
