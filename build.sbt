@@ -54,7 +54,7 @@ lazy val backend = projectMatrix
       "com.outr"     %%% "scribe-cats"  % Versions.scribe,
       "com.outr"     %%% "scribe-slf4j" % Versions.scribe,
       "org.tpolecat" %%% "skunk-core"   % Versions.skunk,
-      "dev.rolang"   %%% "dumbo"        % "0.6.0"
+      "dev.rolang"   %%% "dumbo"        % "0.6.1"
     ),
     Compile / doc / sources := Seq.empty,
     reStart / baseDirectory := (ThisBuild / baseDirectory).value,
@@ -103,7 +103,7 @@ lazy val tests = projectMatrix
       "org.typelevel" %%% "weaver-cats"         % Versions.Weaver % Test,
       "org.http4s"    %%% "http4s-ember-server" % Versions.http4s % Test,
       "org.http4s"    %%% "http4s-ember-client" % Versions.http4s % Test,
-      "dev.rolang"    %%% "dumbo"               % "0.6.0",
+      "dev.rolang"    %%% "dumbo"               % "0.6.1",
       "com.indoorvivants.playwright" %% "weaver" % Versions.Playwright % Test
     ),
     Test / fork := true,
